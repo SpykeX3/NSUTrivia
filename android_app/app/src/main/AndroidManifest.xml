@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quiz">
         <activity
+            android:name=".RoomActivity"
+            android:theme="@style/Theme.Quiz.NoActionBar" />
+        <activity
+            android:name=".JoinRoomActivity"
+            android:theme="@style/Theme.Quiz.NoActionBar" />
+        <activity
             android:name=".MenuActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Quiz.NoActionBar">

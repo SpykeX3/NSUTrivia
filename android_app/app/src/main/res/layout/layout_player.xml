@@ -21,6 +21,6 @@
         android:id="@+id/ready_image"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        app:srcCompat="@drawable/icon_ready" />
+        app:srcCompat="@drawable/host" />
 
 </LinearLayout>

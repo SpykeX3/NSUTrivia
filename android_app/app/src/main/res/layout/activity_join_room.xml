@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MenuActivity"
+    tools:context=".JoinRoomActivity"
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/mountain">
@@ -23,6 +23,8 @@
         app:layout_constraintCircleRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:inputType="textPersonName"
+        android:maxLength="4"
         app:layout_constraintTop_toTopOf="parent"/>
 
 
@@ -32,11 +34,12 @@
         android:layout_height="50dp"
         android:background="@drawable/buttons_corner"
         android:text="@string/join_room"
-        android:textColor="@color/purple_700"
+        android:focusable="false"
+        android:textColor="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintCircleRadius="20dp"
         android:layout_gravity="center"
         android:elevation="20dp"
         android:translationZ="20dp"/>
 
-</>
+</LinearLayout>
