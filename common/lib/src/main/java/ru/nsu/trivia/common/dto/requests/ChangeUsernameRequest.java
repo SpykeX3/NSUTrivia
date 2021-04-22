@@ -4,6 +4,9 @@ public class ChangeUsernameRequest {
     private String token;
     private String username;
 
+    public ChangeUsernameRequest() {
+    }
+
     public ChangeUsernameRequest(String token, String username) {
         this.token = token;
         this.username = username;

@@ -3,6 +3,9 @@ package ru.nsu.trivia.common.dto.requests;
 public class GetByTokenRequest {
     String token;
 
+    public GetByTokenRequest() {
+    }
+
     public GetByTokenRequest(String token) {
         this.token = token;
     }
