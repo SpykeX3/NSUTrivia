@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.nsu.edubinskaya.quiz">
+    package="ru.nsu.trivia.quiz">
 
     <application
         android:allowBackup="true"
@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quiz">
         <activity
-            android:name=".RoomActivity"
+            android:name=".LobbyActivity"
             android:theme="@style/Theme.Quiz.NoActionBar" />
         <activity
             android:name=".JoinRoomActivity"

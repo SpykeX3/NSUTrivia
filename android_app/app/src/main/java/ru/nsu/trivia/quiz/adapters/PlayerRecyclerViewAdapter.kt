@@ -1,4 +1,4 @@
-package ru.nsu.edubinskaya.quiz.adapters
+package ru.nsu.trivia.quiz.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.nsu.edubinskaya.quiz.R
+import ru.nsu.trivia.quiz.adapters.PlayerInfo
+import ru.nsu.trivia.quiz.R
 
 class PlayerRecyclerViewAdapter(var context: Context, var responseList: List<PlayerInfo>) :
         RecyclerView.Adapter<PlayerRecyclerViewAdapter.ViewHolder>() {

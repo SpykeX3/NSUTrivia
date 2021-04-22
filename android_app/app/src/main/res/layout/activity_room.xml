@@ -6,11 +6,11 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/room_code_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="30dp"
         android:text="Room"
         android:textSize="54sp"
         android:textStyle="bold"
@@ -18,7 +18,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,11 +27,22 @@
             android:orientation="vertical" >
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/players_view"
+                android:id="@+id/recycler_view_lobby"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp" />
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/button_start_game"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="end"
+        android:layout_marginEnd="20dp"
+        style="@style/Buttons.Active"
+        android:text="@string/start_game" />
+
 
 </LinearLayout>

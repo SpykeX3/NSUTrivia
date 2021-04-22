@@ -19,7 +19,6 @@
         android:textColor="@color/gray_700"
         android:maxLength="12"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintCircleRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,24 +26,18 @@
     <Button
         android:id="@+id/join_room"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:background="@drawable/buttons_corner"
         android:text="@string/join_room"
-        android:focusable="false"
         android:layout_marginBottom="40dp"
-        android:textColor="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/room_creation" />
+        app:layout_constraintEnd_toEndOf="@+id/room_creation"
+        style="@style/Buttons.NotActive"/>
 
     <Button
         android:id="@+id/room_creation"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:focusable="false"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/buttons_corner"
         android:text="@string/create_new_room"
-        android:textColor="@color/purple_200"
+        style="@style/Buttons.NotActive"
         app:layout_constraintBottom_toTopOf="@+id/join_room"
         app:layout_constraintEnd_toEndOf="@+id/edit_text_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

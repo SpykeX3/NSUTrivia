@@ -1,7 +1,7 @@
-package ru.nsu.edubinskaya.quiz.adapters
+package ru.nsu.trivia.quiz.adapters
 
 class PlayerInfo(_name: String, _isHost: Boolean) {
-    private val isHost = false
+    private val isHost = _isHost
     private val name: String = _name
 
     fun isHost(): Boolean{

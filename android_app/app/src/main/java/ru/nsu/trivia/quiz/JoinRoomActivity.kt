@@ -1,4 +1,4 @@
-package ru.nsu.edubinskaya.quiz
+package ru.nsu.trivia.quiz
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -35,10 +35,11 @@ class JoinRoomActivity : AppCompatActivity() {
         }
     }
 
-    fun joinRoom(roomCode: String){
+    private fun joinRoom(roomCode: String){
         //TODO: connect to server
-        val intent = Intent(this, RoomActivity::class.java)
+        val intent = Intent(this, LobbyActivity::class.java)
         intent.putExtra("userName", getIntent().extras?.getString("userName"))
+        intent.putExtra("isHost", false);
         startActivity(intent)
     }
 }
