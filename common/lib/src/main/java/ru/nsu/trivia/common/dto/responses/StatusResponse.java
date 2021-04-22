@@ -1,4 +1,4 @@
-package ru.nsu.trivia.common.dto;
+package ru.nsu.trivia.common.dto.responses;
 
 import java.util.List;
 

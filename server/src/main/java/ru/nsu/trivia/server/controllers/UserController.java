@@ -1,15 +1,41 @@
 package ru.nsu.trivia.server.controllers;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.nsu.trivia.common.dto.StatusResponse;
+import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest;
+import ru.nsu.trivia.common.dto.requests.GetByTokenRequest;
+import ru.nsu.trivia.common.dto.responses.StatusResponse;
+import ru.nsu.trivia.server.sessions.SessionService;
 
-@RestController(value = "/user/")
+@RestController
 public class UserController {
-    @PostMapping(value = "nickname", consumes = MediaType.APPLICATION_JSON_VALUE,
+
+    @Autowired
+    SessionService sessionService;
+
+    @PostMapping(value = "/user/nickname", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public StatusResponse setUsername(String username) {
+    public StatusResponse setUsername(ChangeUsernameRequest changeUsernameRequest) {
+        sessionService.setNickname(changeUsernameRequest.getToken(), changeUsernameRequest.getUsername());
         return new StatusResponse(0);
+    }
+
+    @GetMapping(value = "/user/nickname", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getUsername(GetByTokenRequest request) {
+        return sessionService.getNickname(request.getToken());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public StatusResponse handleError(HttpServletRequest req, Exception ex) {
+        return new StatusResponse(1, List.of(ex.getMessage()));
     }
 }
