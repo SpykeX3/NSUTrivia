@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTask
 import ru.nsu.trivia.quiz.adapters.VariantsRecyclerViewAdapter
+import java.sql.Time
 import java.util.*
 import kotlin.collections.ArrayList
 
 class QuizActivity : AppCompatActivity() {
+    final val QUIZ_TIME = 60
     lateinit var variances: List<SelectAnswerTask>
     private var currQ = 0
     private var mLayoutManager = LinearLayoutManager(this)
@@ -27,28 +29,42 @@ class QuizActivity : AppCompatActivity() {
         createRecyclerView()
         showQuestion()
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        progressBar.max = 10
+        progressBar.max = QUIZ_TIME
         val handler = Handler(Looper.getMainLooper())
-
+        val time = System.currentTimeMillis()
         handler.post(object : Runnable {
             override fun run() {
-                progressBar.progress += 1
-                handler.postDelayed(this, 1000)
+                if ( - System.currentTimeMillis() + time < QUIZ_TIME*1000) {
+                    progressBar.progress = (System.currentTimeMillis() - time).toInt()/1000
+                    handler.postDelayed(this, 1000)
+                }
+                else{
+                    goToLobbyResult()
+                }
             }
         })
     }
 
+    private fun goToLobbyResult(){
+
+    }
+
     private fun showQuestion(){
-        adapter = VariantsRecyclerViewAdapter(this, variances[currQ])
-        findViewById<TextView>(R.id.text_view_question).text = variances[currQ].question
-        adapter.notifyDataSetChanged()
-        findViewById<RecyclerView>(R.id.recycler_view_variants).adapter = adapter
-        currQ++;
+        if (currQ < variances.size) {
+            adapter = VariantsRecyclerViewAdapter(this, variances[currQ])
+            findViewById<TextView>(R.id.text_view_question).text = variances[currQ].question
+            adapter.notifyDataSetChanged()
+            findViewById<RecyclerView>(R.id.recycler_view_variants).adapter = adapter
+            currQ++;
+        }
+        else{
+            goToLobbyResult()
+        }
     }
 
     fun showCorrect(view: View){
         val id = findViewById<RecyclerView>(R.id.recycler_view_variants).getChildLayoutPosition(view)
-        adapter.showCorrect(id, variances[currQ].correctVariantId)
+        adapter.showCorrect(id, variances[currQ-1].correctVariantId)
         adapter.notifyDataSetChanged()
 
         val handler = Handler(Looper.getMainLooper())
