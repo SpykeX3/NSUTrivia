@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:gravity="center"
+    android:background="@drawable/recycler_view_background"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp">
+
+    <TextView
+        android:id="@+id/player_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/gray_700"
+        android:textSize="20sp"
+        android:paddingStart="15dp"
+        android:text="@string/textview" />
+
+    <ImageView
+        android:id="@+id/ready_image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@drawable/host" />
+
+</LinearLayout>

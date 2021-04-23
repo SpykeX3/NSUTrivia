@@ -1,0 +1,47 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Quiz" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/gray_700</item>
+        <item name="colorOnPrimary">@color/gray_200</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/purple_200</item>
+        <item name="colorSecondaryVariant">@color/purple_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.Quiz.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Quiz.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Quiz.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Buttons">
+        <item name="android:background">@drawable/buttons_corner</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Buttons.NotActive">
+        <item name="android:textColor">@color/purple_200</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="Buttons.Active">
+        <item name="android:textColor">@color/purple_700</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Answer">
+        <item name="android:textColor">@color/gray_700</item>
+        <item name="android:background">@drawable/recycler_view_background</item>
+        <item name="android:layout_margin">18dp</item>
+    </style>
+</resources>

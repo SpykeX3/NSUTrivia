@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".JoinRoomActivity"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/mountain">
+
+
+    <EditText
+        android:id="@+id/edit_text_room_code"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="30dp"
+        android:background="@drawable/buttons_corner"
+        android:hint="@string/enter_room_code"
+        android:padding="15dp"
+        android:textColor="@color/gray_700"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintCircleRadius="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:inputType="textPersonName"
+        android:maxLength="4"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <Button
+        android:id="@+id/join_room"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:background="@drawable/buttons_corner"
+        android:text="@string/join_room"
+        android:focusable="false"
+        android:textColor="@color/purple_200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintCircleRadius="20dp"
+        android:layout_gravity="center"
+        android:elevation="20dp"
+        android:translationZ="20dp"/>
+
+</LinearLayout>
