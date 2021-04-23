@@ -5,13 +5,15 @@ import java.util.List;
 public class SelectAnswerTask extends Task {
     private String question;
     private List<String> variants;
+    private Integer correctVariantId;
 
     public SelectAnswerTask() {
     }
 
-    public SelectAnswerTask(String question, List<String> variants) {
+    public SelectAnswerTask(String question, List<String> variants, int correctVariantId) {
         this.question = question;
         this.variants = variants;
+        this.correctVariantId = correctVariantId;
     }
 
     public String getQuestion() {
@@ -28,5 +30,13 @@ public class SelectAnswerTask extends Task {
 
     public void setVariants(List<String> variants) {
         this.variants = variants;
+    }
+
+    public Integer getCorrectVariantId() {
+        return correctVariantId;
+    }
+
+    public void setCorrectVariantId(Integer correctVariantId) {
+        this.correctVariantId = correctVariantId;
     }
 }

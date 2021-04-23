@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:weightSum="9"
-    android:gravity="center"
     tools:context=".QuizActivity"
     android:background="@drawable/mountain">
 
@@ -19,44 +18,29 @@
         android:layout_marginStart="20dp"
         android:layout_marginBottom="40dp"/>
 
-    <TextView
-        android:id="@+id/ans1"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_variants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        style="@style/Answer"
-        android:text="question1"/>
-
-    <TextView
-        android:id="@+id/ans2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        style="@style/Answer"/>
-
-    <TextView
-        android:id="@+id/ans3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        style="@style/Answer"/>
-
-    <TextView
-        android:id="@+id/ans4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        style="@style/Answer"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="4"
+        />
 
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_marginTop="20dp"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:backgroundTint="@color/gray_700"
+        android:max="5"
+        android:progress="2"
+        android:progressTint="#ACE1E8" 
+        android:layout_gravity="bottom"/>
 
 </LinearLayout>

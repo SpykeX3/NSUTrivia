@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.nsu.trivia.quiz.adapters.PlayerInfo
+import ru.nsu.trivia.common.dto.model.PlayerInLobby
 import ru.nsu.trivia.quiz.R
 
-class PlayerRecyclerViewAdapter(var context: Context, var responseList: List<PlayerInfo>) :
+class PlayerRecyclerViewAdapter(var context: Context, var responseList: List<PlayerInLobby>) :
         RecyclerView.Adapter<PlayerRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -20,8 +20,8 @@ class PlayerRecyclerViewAdapter(var context: Context, var responseList: List<Pla
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val request = responseList[position]
-        holder.textView.text = request.getName()
-        holder.imageView.visibility = if (request.isHost()){
+        holder.textView.text = request.username
+        holder.imageView.visibility = if (request.isHost){
             View.VISIBLE
         } else{
             View.INVISIBLE
