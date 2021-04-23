@@ -39,7 +39,7 @@ public class SessionService {
         return session.getToken();
     }
 
-    
+
     private String generateToken() {
         return Hashing.sha512()
                 .hashString("" + rng.nextLong() + ":" + System.currentTimeMillis(), Charset.defaultCharset())
