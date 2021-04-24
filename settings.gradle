@@ -10,9 +10,6 @@
 rootProject.name = 'NSUTrivia'
 include ':common:lib'
 include ':server'
-include ':Quiz'
-include ':app'
+
 project(':common:lib').projectDir = file('common/lib')
 project(':server').projectDir = file('server')
-project(':Quiz').projectDir = file('Quiz')
-project(':app').projectDir = file('Quiz/app')

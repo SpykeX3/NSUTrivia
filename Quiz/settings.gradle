@@ -1,0 +1,5 @@
+include ':app'
+rootProject.name = "Quiz"
+
+include ':common:lib'
+project(':common:lib').projectDir = file('../common/lib')
