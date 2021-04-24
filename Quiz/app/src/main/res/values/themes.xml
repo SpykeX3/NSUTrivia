@@ -49,4 +49,20 @@
         <item name="android:gravity">center</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="Task">
+        <item name="android:textColor">@color/purple_700</item>
+        <item name="android:background">@drawable/recycler_view_background</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ThemeOverlay.NSUTrivia.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
+        <item name="fullscreenTextColor">@color/light_blue_A200</item>
+    </style>
 </resources>
