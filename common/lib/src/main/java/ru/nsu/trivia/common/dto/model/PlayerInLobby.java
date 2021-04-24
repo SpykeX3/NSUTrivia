@@ -5,6 +5,9 @@ public class PlayerInLobby {
     boolean isHost;
     int score;
 
+    public PlayerInLobby() {
+    }
+
     public PlayerInLobby(String username, boolean isHost) {
         this.username = username;
         this.isHost = isHost;
