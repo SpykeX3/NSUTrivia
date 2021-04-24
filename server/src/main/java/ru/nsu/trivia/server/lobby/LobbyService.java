@@ -30,7 +30,7 @@ import ru.nsu.trivia.server.sessions.SessionService;
 @EnableScheduling
 public class LobbyService {
 
-    private static Logger LOG = Logger.getGlobal();
+    private static Logger LOG = Logger.getLogger(LobbyService.class.getName());
 
     @Value("lobby.closed.lifetime")
     private static long CLOSED_LOBBY_LIFETIME;
