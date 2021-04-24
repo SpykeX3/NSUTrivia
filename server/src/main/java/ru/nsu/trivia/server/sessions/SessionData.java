@@ -1,5 +1,7 @@
 package ru.nsu.trivia.server.sessions;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -41,5 +43,16 @@ public class SessionData {
 
     public void setLobbyId(Long lobbyId) {
         this.lobbyId = lobbyId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof SessionData && Objects.equals(token, ((SessionData) obj).token));
+    }
+
+
+    @Override
+    public int hashCode() {
+        return token == null ? -1 : token.hashCode();
     }
 }

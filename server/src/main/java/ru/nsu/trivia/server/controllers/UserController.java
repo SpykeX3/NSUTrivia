@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest;
-import ru.nsu.trivia.common.dto.requests.GetByTokenRequest;
+import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
 import ru.nsu.trivia.common.dto.responses.StatusResponse;
 import ru.nsu.trivia.server.sessions.SessionService;
 
@@ -33,7 +33,7 @@ public class UserController {
 
     @GetMapping(value = "/nickname", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getUsername(@RequestBody GetByTokenRequest request) {
+    public String getUsername(@RequestBody UsingTokenRequest request) {
         return sessionService.getNickname(request.getToken());
     }
 

@@ -31,6 +31,11 @@ public class SessionService {
                 .getNickname();
     }
 
+    public SessionData getSession(String token) {
+        return sessionRepository.findById(token)
+                .orElseThrow(() -> new RuntimeException("No session found for token " + token));
+    }
+
     @Transactional
     public String createSession() {
         SessionData session = new SessionData();
