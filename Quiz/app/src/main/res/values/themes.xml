@@ -42,6 +42,11 @@
     <style name="Answer">
         <item name="android:textColor">@color/gray_700</item>
         <item name="android:background">@drawable/recycler_view_background</item>
-        <item name="android:layout_margin">18dp</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>
