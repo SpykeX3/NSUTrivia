@@ -98,8 +98,8 @@ public class LobbyService {
         return id;
     }
 
-    public void deleteRoom(String token) {
-        Lobby lobby = playerToLobby.get(token);
+    public void deleteRoom(String id) {
+        Lobby lobby = roomIDToLobby.get(id);
         if (lobby == null) {
             throw new RuntimeException("Player not in any lobby");
         }
