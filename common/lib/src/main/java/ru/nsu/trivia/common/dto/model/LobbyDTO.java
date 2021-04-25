@@ -12,6 +12,7 @@ public class LobbyDTO {
     private List<PlayerInLobby> players;
     private int round;
     private LobbyState state;
+    private  String id;
 
     public LobbyDTO() {
     }
@@ -44,5 +45,13 @@ public class LobbyDTO {
 
     public void setState(LobbyState state) {
         this.state = state;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,21 +17,22 @@ class LobbyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room)
         fillRecyclerView()
+
         if (intent.extras?.getBoolean("isHost") == false){
            findViewById<Button>(R.id.button_start_game).visibility = View.INVISIBLE
         }
+
         findViewById<Button>(R.id.button_start_game).setOnClickListener{ view ->
             val intent = Intent(this, QuizActivity::class.java)
             startActivity(intent)
         }
+
     }
 
     private fun getRoomUsers(): List<PlayerInLobby>{
         //TODO: get this list from the server
         val info = ArrayList<PlayerInLobby>()
         info.add(PlayerInLobby(intent.extras?.get("userName") as String, true))
-        info.add(PlayerInLobby("Vasyan97", false))
-        info.add(PlayerInLobby("Katushka2001", false))
         return info
     }
 

@@ -40,4 +40,13 @@
         style="@style/Buttons.NotActive"
         app:layout_constraintBottom_toTopOf="@+id/join_room"
         app:layout_constraintEnd_toEndOf="@+id/edit_text_name" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:background="@color/gray_0500"
+        android:id="@+id/animationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lottie_rawRes="@raw/loading"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
