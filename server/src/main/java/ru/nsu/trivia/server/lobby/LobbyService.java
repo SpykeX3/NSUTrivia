@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
+import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.server.model.Lobby;
 import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
@@ -82,7 +83,7 @@ public class LobbyService {
     }
 
     public void addSubscription(Lobby lobby, DeferredResult<LobbyDTO> result) {
-        if (lobby.getState() == LobbyDTO.LobbyState.Closed) {
+        if (lobby.getState() == LobbyState.Closed) {
             notifySubscriber(result, lobby);
             return;
         }
@@ -102,7 +103,7 @@ public class LobbyService {
         if (lobby == null) {
             throw new RuntimeException("Player not in any lobby");
         }
-        lobby.setState(LobbyDTO.LobbyState.Closed);
+        lobby.setState(LobbyState.Closed);
         notifySubscribers(lobby);
         closedLobbies.add(new ClosedLobby(lobby, System.currentTimeMillis()));
     }
@@ -127,7 +128,7 @@ public class LobbyService {
     }
 
     public void connectToLobby(String token, Lobby lobby) {
-        if (lobby.getState() != LobbyDTO.LobbyState.Waiting) {
+        if (lobby.getState() != LobbyState.Waiting) {
             throw new RuntimeException("Game is already running");
         }
         synchronized (lobby) {
