@@ -3,12 +3,12 @@ package ru.nsu.trivia.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.nsu.trivia.common.dto.model.LobbyDTO;
+import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.common.dto.model.task.Task;
 
 public class Lobby {
 
-    private LobbyDTO.LobbyState state;
+    private LobbyState state;
     private String id;
     private List<Player> players;
     private int round;
@@ -16,7 +16,7 @@ public class Lobby {
     private final long creationTime;
 
     public Lobby() {
-        state = LobbyDTO.LobbyState.Waiting;
+        state = LobbyState.Waiting;
         round = 0;
         currentTask = null;
         players = new ArrayList<>(2);
@@ -24,11 +24,11 @@ public class Lobby {
     }
 
 
-    public LobbyDTO.LobbyState getState() {
+    public LobbyState getState() {
         return state;
     }
 
-    public void setState(LobbyDTO.LobbyState state) {
+    public void setState(LobbyState state) {
         this.state = state;
     }
 

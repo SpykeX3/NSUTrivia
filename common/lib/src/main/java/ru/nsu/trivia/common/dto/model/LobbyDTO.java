@@ -3,11 +3,6 @@ package ru.nsu.trivia.common.dto.model;
 import java.util.List;
 
 public class LobbyDTO {
-    public enum LobbyState {
-        Waiting,
-        Playing,
-        Closed
-    }
 
     private List<PlayerInLobby> players;
     private int round;
