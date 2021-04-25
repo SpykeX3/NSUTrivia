@@ -11,6 +11,7 @@ public class LobbyConverter {
         dto.setPlayers(lobby.getPlayers().stream().map(PlayerConverter::convert).collect(Collectors.toList()));
         dto.setRound(lobby.getRound());
         dto.setState(lobby.getState());
+        dto.setId(lobby.getId());
         return dto;
     }
 }

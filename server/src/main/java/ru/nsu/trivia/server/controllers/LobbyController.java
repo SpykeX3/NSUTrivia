@@ -2,10 +2,7 @@ package ru.nsu.trivia.server.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest;
@@ -13,7 +10,8 @@ import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
 import ru.nsu.trivia.common.dto.responses.StatusResponse;
 import ru.nsu.trivia.server.lobby.LobbyService;
 
-@RestController(value = "/lobby")
+@RestController
+@RequestMapping("/lobby")
 public class LobbyController {
     @Autowired
     LobbyService lobbyService;
