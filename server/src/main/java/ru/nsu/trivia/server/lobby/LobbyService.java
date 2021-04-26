@@ -14,11 +14,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
 import ru.nsu.trivia.common.dto.model.LobbyState;
@@ -27,26 +23,29 @@ import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
 import ru.nsu.trivia.server.sessions.SessionService;
 
-@Service
-@EnableScheduling
 public class LobbyService {
 
     private static Logger LOG = Logger.getLogger(LobbyService.class.getName());
 
-    @Value("lobby.closed.lifetime")
-    private static long CLOSED_LOBBY_LIFETIME;
-    @Value("lobby.active.lifetime")
-    private static long ACTIVE_LOBBY_LIFETIME;
 
-    @Autowired
     private SessionService sessionService;
+    private final long closedLobbyLifetime;
+    private final long activeLobbyLifetime;
 
-    private BiMap<String, Lobby> playerToLobby = Maps.synchronizedBiMap(HashBiMap.create());
-    private Map<String, Lobby> roomIDToLobby = new ConcurrentHashMap<>();
-    private Multimap<Lobby, DeferredResult<LobbyDTO>> subscriptions =
+
+    private final BiMap<String, Lobby> playerToLobby = Maps.synchronizedBiMap(HashBiMap.create());
+    private final Map<String, Lobby> roomIDToLobby = new ConcurrentHashMap<>();
+    private final Multimap<Lobby, DeferredResult<LobbyDTO>> subscriptions =
             Multimaps.synchronizedSetMultimap(HashMultimap.create());
-    private RoomIDGenerator idGenerator = new RoomIDGenerator();
-    private Set<ClosedLobby> closedLobbies = Collections.synchronizedSet(new HashSet<>());
+    private final RoomIDGenerator idGenerator = new RoomIDGenerator();
+    private final Set<ClosedLobby> closedLobbies = Collections.synchronizedSet(new HashSet<>());
+
+
+    public LobbyService(SessionService sessionService, long closedLobbyLifetime, long activeLobbyLifetime) {
+        this.sessionService = sessionService;
+        this.closedLobbyLifetime = closedLobbyLifetime;
+        this.activeLobbyLifetime = activeLobbyLifetime;
+    }
 
     private static class ClosedLobby {
         public Lobby lobby;
@@ -101,7 +100,7 @@ public class LobbyService {
     public void deleteRoom(String id) {
         Lobby lobby = roomIDToLobby.get(id);
         if (lobby == null) {
-            throw new RuntimeException("Player not in any lobby");
+            return;
         }
         lobby.setState(LobbyState.Closed);
         notifySubscribers(lobby);
@@ -114,8 +113,18 @@ public class LobbyService {
             throw new RuntimeException("Player not in any lobby");
         }
         synchronized (lobby) {
+            boolean isHost =
+                    lobby.getPlayers().stream()
+                            .filter(p -> p.getToken().equals(token))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Player not found in lobby"))
+                            .isHost();
             lobby.removePlayer(playerByToken(token));
+            if (isHost) {
+                deleteRoom(lobby.getId());
+            }
             notifySubscribers(lobby);
+
         }
     }
 
@@ -137,7 +146,7 @@ public class LobbyService {
                 player.setHost(true);
             }
             lobby.addPlayer(player);
-            playerToLobby.put(token, lobby);
+            playerToLobby.forcePut(token, lobby);
             notifySubscribers(lobby);
         }
     }
@@ -160,10 +169,10 @@ public class LobbyService {
         long time = System.currentTimeMillis();
 
         long count = roomIDToLobby.values().stream()
-                .filter(lobby -> time - lobby.getCreationTime() > ACTIVE_LOBBY_LIFETIME)
+                .filter(lobby -> time - lobby.getCreationTime() > activeLobbyLifetime)
                 .peek(lobby -> deleteRoom(lobby.getId()))
                 .count();
-        LOG.info("zombieLobbyMarker marked " + count + "lobbies");
+        LOG.info("zombieLobbyMarker marked " + count + " lobbies");
         LOG.info("Currently active lobbies: " + roomIDToLobby.values().size());
     }
 
@@ -172,7 +181,7 @@ public class LobbyService {
         long time = System.currentTimeMillis();
         BiMap<Lobby, String> lobbyToPlayer = playerToLobby.inverse();
         var toDelete = closedLobbies.stream()
-                .filter(cl -> cl.timestamp < time - CLOSED_LOBBY_LIFETIME)
+                .filter(cl -> cl.timestamp < time - closedLobbyLifetime)
                 .collect(Collectors.toSet());
         LOG.info("closedLobbyCollector is deleting " + toDelete.size() + " lobbies");
         toDelete.forEach(closedLobby -> {
