@@ -11,9 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import com.airbnb.lottie.LottieAnimationView
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import ru.nsu.trivia.common.dto.model.LobbyDTO
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
@@ -67,23 +64,24 @@ class MenuActivity : AppCompatActivity() {
         RoomCreator().execute()
     }
 
-    private inner class RoomCreator: AsyncTask<Void, Integer, LobbyDTO>() {
+    private inner class RoomCreator: AsyncTask<Void, Integer, String>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
             findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
         }
 
-        override fun onPostExecute(result: LobbyDTO) {
+        override fun onPostExecute(result: String) {
             super.onPostExecute(result)
             val intent = Intent(context, LobbyActivity::class.java)
             intent.putExtra("userName", playerName.text.toString())
             intent.putExtra("isHost", true)
-            intent.putExtra("roomId", result.id)
+            intent.putExtra("lobbyDTO", result)
+            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
             startActivity(intent)
         }
 
-        override fun doInBackground(vararg params: Void?): LobbyDTO {
+        override fun doInBackground(vararg params: Void?): String {
             val userName = ChangeUsernameRequest()
             userName.username = playerName.text.toString()
             userName.token = TokenController.getToken(context)
@@ -91,9 +89,7 @@ class MenuActivity : AppCompatActivity() {
 
             val request = UsingTokenRequest()
             request.token = TokenController.getToken(context)
-            val objectMapper = ObjectMapper()
-            val lobby = APIConnector.doPost("lobby/create", request)
-            return objectMapper.readValue<LobbyDTO>(lobby)
+            return APIConnector.doPost("lobby/create", request)
         }
     }
 
@@ -106,11 +102,13 @@ class MenuActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg params: Void?): String? {
             /*if (TokenController.isTokenSaved(context)){
+                //TODO: сейчас у меня на устройстве бд сервера при порезагрузках не сохраняется, когда будет -
+                // раскомменчу
                 Log.d("Token", TokenController.getToken(context))
                 return TokenController.getToken(context)
             }*/
             val token = APIConnector.doPost("token/generate", null)
-            TokenController.setToken(token, context)
+            TokenController.setToken(token.trim(), context)
             Log.d("Token", token)
             return token
         }

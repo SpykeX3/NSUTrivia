@@ -71,6 +71,7 @@ public class APIConnector {
                 sb.append(line + "\n");
             }
             br.close();
+            Log.d(TAG, "Get: " + sb.toString());
             return sb.toString();
         } else {
             return "";
