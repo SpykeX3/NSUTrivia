@@ -52,9 +52,10 @@ class SimpleTask : Fragment() {
         val time = System.currentTimeMillis()
         handler.post(object : Runnable {
             override fun run() {
-                if (-System.currentTimeMillis() + time < 10 * 1000) {
-                    progressBar?.progress = (System.currentTimeMillis() - time).toInt() / 1000
+                if (Math.abs(System.currentTimeMillis() - time) < 10 * 1000) {
+                    progressBar?.progress = Math.abs(System.currentTimeMillis() - time).toInt() / 1000
                     handler.postDelayed(this, 1000)
+                    println(-System.currentTimeMillis() + time)
                 } else {
                     goToLobbyResult()
                 }

@@ -16,13 +16,13 @@ public class LobbyController {
     @Autowired
     LobbyService lobbyService;
 
-    @GetMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
             MediaType.APPLICATION_JSON_VALUE)
     LobbyDTO getLobbyState(@RequestBody UsingTokenRequest request) {
         return lobbyService.getLobbyByToken(request.getToken());
     }
 
-    @GetMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @PostMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
             MediaType.APPLICATION_JSON_VALUE)
     DeferredResult<LobbyDTO> subscribeLobbyState(@RequestBody UsingTokenRequest request) {
         DeferredResult<LobbyDTO> result = new DeferredResult<>();

@@ -23,25 +23,34 @@ public class APIConnector {
 
     private static String serverAddress = "http://10.0.2.2:4888/";
 
-    public static String doGet(String url) throws IOException {
+    public static String doGet(String url, Object requestBody) throws IOException {
         URL obj = new URL(serverAddress + url);
         Log.d(TAG, "Ask: " + obj);
-        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setDoOutput(true);
+        con.setDoInput(true);
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestMethod("GET");
 
-        connection.setRequestMethod("GET");
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(requestBody);
 
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
+        OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+        wr.write(json);
+        wr.flush();
 
-        while ((inputLine = bufferedReader.readLine()) != null) {
-            response.append(inputLine);
+        StringBuilder sb = new StringBuilder();
+        int HttpResult = con.getResponseCode();
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), "utf-8"));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
         }
-        bufferedReader.close();
-
-        Log.d(TAG, "Response string: " + response.toString());
-
-        return response.toString();
+        br.close();
+        Log.d(TAG, "Get: " + sb.toString());
+        return sb.toString();
     }
 
     public static String doPost(String url, Object requestBody) throws IOException {

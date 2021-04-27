@@ -12,7 +12,7 @@ import ru.nsu.trivia.common.dto.model.PlayerInLobby
 import ru.nsu.trivia.quiz.QuizActivity
 import ru.nsu.trivia.quiz.R
 
-class PlayerRecyclerViewAdapter(var context: Context, var responseList: List<PlayerInLobby>) :
+class PlayerRecyclerViewAdapter(var context: Context, var responseList: ArrayList<PlayerInLobby>) :
         RecyclerView.Adapter<PlayerRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,6 +35,11 @@ class PlayerRecyclerViewAdapter(var context: Context, var responseList: List<Pla
 
     override fun getItemCount(): Int {
         return responseList.size
+    }
+
+    fun setResponseListToNew(list: List<PlayerInLobby>){
+        responseList.clear()
+        responseList.addAll(list)
     }
 
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {

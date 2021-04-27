@@ -6,8 +6,6 @@ import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.findFragment
 import androidx.recyclerview.widget.RecyclerView
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTask
 import ru.nsu.trivia.common.dto.model.task.Task

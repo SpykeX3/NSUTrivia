@@ -10,9 +10,12 @@
         android:id="@+id/text_view_question"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:gravity="top"
+        android:layout_marginTop="40dp"
         android:layout_gravity="top"
-        style="@style/Task" />
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_variants"

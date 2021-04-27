@@ -46,6 +46,7 @@ class JoinRoomActivity : AppCompatActivity() {
         findViewById<Button>(R.id.join_room).setOnClickListener { view ->
            joinRoom(findViewById<EditText>(R.id.edit_text_room_code).text.toString())
         }
+        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
     }
 
     private fun joinRoom(roomCode: String){
@@ -77,7 +78,7 @@ class JoinRoomActivity : AppCompatActivity() {
 
             val request = JoinLobbyRequest()
             request.token = TokenController.getToken(context)
-            request.roomID = findViewById<Button>(R.id.join_room).toString()
+            request.roomID = findViewById<EditText>(R.id.edit_text_room_code).text.toString()
             return APIConnector.doPost("lobby/join", request)
         }
     }

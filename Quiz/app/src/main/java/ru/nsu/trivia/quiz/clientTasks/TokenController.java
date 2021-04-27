@@ -1,3 +1,4 @@
+
 package ru.nsu.trivia.quiz.clientTasks;
 
 import android.content.Context;
@@ -13,21 +14,21 @@ import java.util.logging.FileHandler;
 public class TokenController {
     public static String token;
 
-    public static void setToken(String token, Context context){
+    public static void setToken(String token, Context context) {
         TokenController.token = token;
         create(context, token);
     }
 
-    public static String getToken(Context context){
+    public static String getToken(Context context) {
         if (token != null) return token;
         else return read(context, "token");
     }
 
-    public static boolean isTokenSaved(Context context){
+    public static boolean isTokenSaved(Context context) {
         if (token != null) return true;
         String path = context.getFilesDir() + "/" + "token";
         File file = new File(path);
-        return file.exists();
+        return file.exists() && !read(context, "token").equals("");
     }
 
     static String read(Context context, String fileName) {

@@ -8,8 +8,8 @@
  */
 
 rootProject.name = 'NSUTrivia'
-include ':common:lib'
+includeFlat 'common'
 include ':server'
 
-project(':common:lib').projectDir = file('common/lib')
+project(':common').projectDir = file('common/lib')
 project(':server').projectDir = file('server')
