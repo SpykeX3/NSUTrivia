@@ -13,19 +13,24 @@ import ru.nsu.trivia.server.lobby.LobbyService;
 @RestController
 @RequestMapping("/lobby")
 public class LobbyController {
-    @Autowired
+
     LobbyService lobbyService;
 
-    @PostMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @Autowired
+    public LobbyController(LobbyService lobbyService){
+        this.lobbyService = lobbyService;
+    }
+
+    @GetMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
             MediaType.APPLICATION_JSON_VALUE)
     LobbyDTO getLobbyState(@RequestBody UsingTokenRequest request) {
         return lobbyService.getLobbyByToken(request.getToken());
     }
 
-    @PostMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @GetMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
             MediaType.APPLICATION_JSON_VALUE)
     DeferredResult<LobbyDTO> subscribeLobbyState(@RequestBody UsingTokenRequest request) {
-        DeferredResult<LobbyDTO> result = new DeferredResult<>();
+        DeferredResult<LobbyDTO> result = new DeferredResult<>(360000L);
         lobbyService.addSubscription(request.getToken(), result);
         return result;
     }
@@ -57,6 +62,13 @@ public class LobbyController {
             MediaType.APPLICATION_JSON_VALUE)
     StatusResponse leaveLobby(@RequestBody UsingTokenRequest request) {
         lobbyService.leaveLobby(request.getToken());
+        return new StatusResponse(0);
+    }
+
+    @PostMapping(value = "/start", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+            MediaType.APPLICATION_JSON_VALUE)
+    StatusResponse startLobby(@RequestBody UsingTokenRequest request) {
+        lobbyService.startLobby(request.getToken());
         return new StatusResponse(0);
     }
 

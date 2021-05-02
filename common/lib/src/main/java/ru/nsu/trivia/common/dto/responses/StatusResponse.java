@@ -9,6 +9,9 @@ public class StatusResponse {
     public int code;
     public List<String> errors;
 
+    public StatusResponse() {
+    }
+
     public StatusResponse(int code) {
         this.code = code;
     }
@@ -24,6 +27,10 @@ public class StatusResponse {
 
     public int getCode() {
         return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public List<String> getErrors() {

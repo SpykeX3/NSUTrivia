@@ -107,6 +107,25 @@ public class LobbyService {
         closedLobbies.add(new ClosedLobby(lobby, System.currentTimeMillis()));
     }
 
+    public void startLobby(String token) {
+        Lobby lobby = playerToLobby.get(token);
+        if (lobby == null) {
+            throw new RuntimeException("Can't start game: player is not in any lobby");
+        }
+        Player player = lobby.getPlayers().stream()
+                .filter(p -> p.getToken().equals(token))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Internal error: player not found in associated lobby"));
+        if (!player.isHost()) {
+            throw new RuntimeException("Player is not a host");
+        }
+        if (lobby.getState() != LobbyState.Waiting) {
+            throw new RuntimeException("Lobby has already started");
+        }
+        lobby.setState(LobbyState.Playing);
+        notifySubscribers(lobby);
+    }
+
     public void leaveLobby(String token) {
         var lobby = playerToLobby.get(token);
         if (lobby == null) {
@@ -157,6 +176,7 @@ public class LobbyService {
 
     private void notifySubscriber(DeferredResult<LobbyDTO> result, Lobby lobby) {
         result.setResult(LobbyConverter.convert(lobby));
+        subscriptions.remove(lobby,result);
     }
 
     private Player playerByToken(String token) {
