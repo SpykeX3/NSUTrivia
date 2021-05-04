@@ -79,4 +79,14 @@ public class Lobby {
     public long getCreationTime() {
         return creationTime;
     }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Lobby && id.equals(((Lobby) obj).id);
+    }
 }
