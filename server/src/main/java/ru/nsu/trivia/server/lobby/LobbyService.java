@@ -21,6 +21,7 @@ import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.server.model.Lobby;
 import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
+import ru.nsu.trivia.server.sessions.SessionData;
 import ru.nsu.trivia.server.sessions.SessionService;
 
 public class LobbyService {
@@ -33,7 +34,7 @@ public class LobbyService {
     private final long activeLobbyLifetime;
 
 
-    private final BiMap<String, Lobby> playerToLobby = Maps.synchronizedBiMap(HashBiMap.create());
+    private final Map<String, Lobby> playerToLobby = new ConcurrentHashMap<>();
     private final Map<String, Lobby> roomIDToLobby = new ConcurrentHashMap<>();
     private final Multimap<Lobby, DeferredResult<LobbyDTO>> subscriptions =
             Multimaps.synchronizedSetMultimap(HashMultimap.create());
@@ -165,7 +166,7 @@ public class LobbyService {
                 player.setHost(true);
             }
             lobby.addPlayer(player);
-            playerToLobby.forcePut(token, lobby);
+            playerToLobby.put(token, lobby);
             notifySubscribers(lobby);
         }
     }
@@ -199,14 +200,13 @@ public class LobbyService {
     @Scheduled(fixedDelay = 10000)
     private void closedLobbyCollector() {
         long time = System.currentTimeMillis();
-        BiMap<Lobby, String> lobbyToPlayer = playerToLobby.inverse();
         var toDelete = closedLobbies.stream()
                 .filter(cl -> cl.timestamp < time - closedLobbyLifetime)
                 .collect(Collectors.toSet());
         LOG.info("closedLobbyCollector is deleting " + toDelete.size() + " lobbies");
         toDelete.forEach(closedLobby -> {
             var lobby = closedLobby.lobby;
-            lobbyToPlayer.remove(lobby);
+            closedLobby.lobby.getPlayers().stream().map(SessionData::getToken).forEach(playerToLobby::remove);
             roomIDToLobby.remove(lobby.getId());
             subscriptions.removeAll(lobby);
             idGenerator.recall(lobby.getId());
