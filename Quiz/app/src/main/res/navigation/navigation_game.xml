@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_simple_question_self"
             app:destination="@id/simple_question" />
+        <action
+            android:id="@+id/action_simple_question_to_nearestValueTask"
+            app:destination="@id/nearestValueTask" />
     </fragment>
     <fragment
         android:id="@+id/simpleTaskResult"
@@ -23,6 +26,20 @@
         tools:layout="@layout/fragment_simple_task_results" >
         <action
             android:id="@+id/action_simpleTaskResult_to_simple_question"
+            app:destination="@id/simple_question" />
+        <action
+            android:id="@+id/action_simpleTaskResult_to_nearestValueTask"
+            app:destination="@id/nearestValueTask" />
+    </fragment>
+    <fragment
+        android:id="@+id/nearestValueTask"
+        android:name="ru.nsu.trivia.quiz.gameFragments.NearestValueTask"
+        android:label="NearestValueTask" >
+        <action
+            android:id="@+id/action_nearestValueTask_to_simpleTaskResult"
+            app:destination="@id/simpleTaskResult" />
+        <action
+            android:id="@+id/action_nearestValueTask_to_simple_question2"
             app:destination="@id/simple_question" />
     </fragment>
 </navigation>

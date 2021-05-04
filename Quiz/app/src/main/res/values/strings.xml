@@ -13,4 +13,6 @@
     <string name="answer_the_question_as_quickly_as_you_can">Answer the question as quickly as you can.</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="enter_answer">Enter answer</string>
+    <string name="send_answer">Send answer</string>
 </resources>
