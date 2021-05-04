@@ -89,7 +89,7 @@ class LobbyActivity : AppCompatActivity() {
             Thread.sleep(500);
             val request = UsingTokenRequest()
             request.token = TokenController.getToken(context)
-            val lobby = APIConnector.doPost("lobby/get", request)
+            val lobby = APIConnector.doGet("lobby/get", request)
             if (!lobby.equals("")) {
                 val objectMapper = ObjectMapper()
                 lobbyDTO = objectMapper.readValue<LobbyDTO>(lobby)

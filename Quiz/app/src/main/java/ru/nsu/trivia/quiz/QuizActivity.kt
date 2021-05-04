@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTask
+import ru.nsu.trivia.common.dto.model.task.SetNearestValueTask
 import ru.nsu.trivia.common.dto.model.task.Task
+import ru.nsu.trivia.quiz.gameFragments.NearestValueTask
 import ru.nsu.trivia.quiz.gameFragments.SimpleTask
 import ru.nsu.trivia.quiz.gameFragments.SimpleTaskResult
 import java.util.*
@@ -49,6 +51,17 @@ class QuizActivity : AppCompatActivity() {
                 supportFragmentManager.findFragmentById(R.id.game_nav_fragment)?.childFragmentManager?.fragments?.get(0)
             if (currentFragment is SimpleTask) {
                 currentFragment.showSimpleQuestion(task)
+                return
+            }
+        }
+        if (task is SetNearestValueTask){
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_nearest_value_task, NearestValueTask::class.java, null)
+                .commit()
+            val currentFragment: Fragment? =
+                supportFragmentManager.findFragmentById(R.id.game_nav_fragment)?.childFragmentManager?.fragments?.get(0)
+            if (currentFragment is NearestValueTask) {
+                currentFragment.showQuestion(task)
                 return
             }
         }

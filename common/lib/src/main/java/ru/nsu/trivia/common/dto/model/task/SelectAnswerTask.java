@@ -14,6 +14,7 @@ public class SelectAnswerTask extends Task {
         this.question = question;
         this.variants = variants;
         this.correctVariantId = correctVariantId;
+        this.type = Type.Select_answer;
     }
 
     public String getQuestion() {
