@@ -176,7 +176,7 @@ public class LobbyService {
 
     private void notifySubscriber(DeferredResult<LobbyDTO> result, Lobby lobby) {
         result.setResult(LobbyConverter.convert(lobby));
-        subscriptions.remove(lobby,result);
+        subscriptions.remove(lobby, result);
     }
 
     private Player playerByToken(String token) {

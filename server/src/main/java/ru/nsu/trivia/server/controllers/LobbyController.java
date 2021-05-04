@@ -17,21 +17,21 @@ public class LobbyController {
     LobbyService lobbyService;
 
     @Autowired
-    public LobbyController(LobbyService lobbyService){
+    public LobbyController(LobbyService lobbyService) {
         this.lobbyService = lobbyService;
     }
 
-    @GetMapping(value = "/get", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @GetMapping(value = "/get", produces =
             MediaType.APPLICATION_JSON_VALUE)
-    LobbyDTO getLobbyState(@RequestBody UsingTokenRequest request) {
-        return lobbyService.getLobbyByToken(request.getToken());
+    LobbyDTO getLobbyState(@RequestParam String token) {
+        return lobbyService.getLobbyByToken(token);
     }
 
-    @GetMapping(value = "/subscribe", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @GetMapping(value = "/subscribe", produces =
             MediaType.APPLICATION_JSON_VALUE)
-    DeferredResult<LobbyDTO> subscribeLobbyState(@RequestBody UsingTokenRequest request) {
+    DeferredResult<LobbyDTO> subscribeLobbyState(@RequestParam String token) {
         DeferredResult<LobbyDTO> result = new DeferredResult<>(360000L);
-        lobbyService.addSubscription(request.getToken(), result);
+        lobbyService.addSubscription(token, result);
         return result;
     }
 
