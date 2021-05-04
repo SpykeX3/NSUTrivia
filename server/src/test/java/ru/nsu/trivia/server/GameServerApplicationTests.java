@@ -3,6 +3,10 @@ package ru.nsu.trivia.server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -24,6 +28,7 @@ import ru.nsu.trivia.common.dto.responses.StatusResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -121,6 +126,31 @@ class GameServerApplicationTests {
         assertTrue(joinedLobby1.getPlayers().stream().anyMatch(p -> p.getUsername().equals(username1)));
         assertTrue(joinedLobby1.getPlayers().stream().anyMatch(p -> p.getUsername().equals(username2)));
         assertEquals(List.of(username1), joinedLobby1.getPlayers().stream()
+                .filter(PlayerInLobby::isHost)
+                .map(PlayerInLobby::getUsername)
+                .collect(Collectors.toList()));
+    }
+
+    @Test
+    void subscriptionTest() throws ExecutionException, InterruptedException {
+        LobbyDTO lobby = restTemplate.postForObject(getUrl("lobby/create"), new UsingTokenRequest(tokenUser1),
+                LobbyDTO.class);
+        CompletableFuture<LobbyDTO> lobbyFuture = new CompletableFuture<>();
+        new Thread(() -> {
+            LobbyDTO lobbyDTO = restTemplate.getForObject(getUrl("lobby/subscribe?token=" + tokenUser1),
+                    LobbyDTO.class);
+            lobbyFuture.complete(lobbyDTO);
+        }).start();
+        Thread.sleep(200);
+        restTemplate.postForObject(getUrl("lobby/join"), new JoinLobbyRequest(tokenUser2,
+                lobby.getId()), LobbyDTO.class);
+        LobbyDTO subscribedLobby = lobbyFuture.get();
+        assertNotNull(subscribedLobby);
+        assertNotNull(subscribedLobby.getPlayers());
+        assertEquals(2, subscribedLobby.getPlayers().size());
+        assertTrue(subscribedLobby.getPlayers().stream().anyMatch(p -> p.getUsername().equals(username1)));
+        assertTrue(subscribedLobby.getPlayers().stream().anyMatch(p -> p.getUsername().equals(username2)));
+        assertEquals(List.of(username1), subscribedLobby.getPlayers().stream()
                 .filter(PlayerInLobby::isHost)
                 .map(PlayerInLobby::getUsername)
                 .collect(Collectors.toList()));
