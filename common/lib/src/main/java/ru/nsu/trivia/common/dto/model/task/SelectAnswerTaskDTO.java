@@ -2,15 +2,15 @@ package ru.nsu.trivia.common.dto.model.task;
 
 import java.util.List;
 
-public class SelectAnswerTask extends Task {
+public class SelectAnswerTaskDTO extends TaskDTO {
     private String question;
     private List<String> variants;
     private Integer correctVariantId;
 
-    public SelectAnswerTask() {
+    public SelectAnswerTaskDTO() {
     }
 
-    public SelectAnswerTask(String question, List<String> variants, int correctVariantId) {
+    public SelectAnswerTaskDTO(String question, List<String> variants, int correctVariantId) {
         this.question = question;
         this.variants = variants;
         this.correctVariantId = correctVariantId;

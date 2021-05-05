@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
+import ru.nsu.trivia.common.dto.model.task.Answer;
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest;
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
 import ru.nsu.trivia.common.dto.responses.StatusResponse;
@@ -73,4 +74,10 @@ public class LobbyController {
         return new StatusResponse(0);
     }
 
+    @PostMapping(value = "/answer", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+            MediaType.APPLICATION_JSON_VALUE)
+    StatusResponse submitAnswer(@RequestBody Answer answer) {
+
+        return new StatusResponse(0);
+    }
 }

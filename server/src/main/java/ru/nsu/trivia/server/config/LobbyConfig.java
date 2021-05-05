@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.nsu.trivia.server.lobby.LobbyService;
+import ru.nsu.trivia.server.lobby.TaskService;
 import ru.nsu.trivia.server.sessions.SessionService;
 
 @Configuration
@@ -19,7 +20,12 @@ public class LobbyConfig {
     private long ACTIVE_LOBBY_LIFETIME;
 
     @Bean
-    LobbyService lobbyService(SessionService sessionService) {
-        return new LobbyService(sessionService, CLOSED_LOBBY_LIFETIME, ACTIVE_LOBBY_LIFETIME);
+    LobbyService lobbyService(SessionService sessionService, TaskService taskService) {
+        return new LobbyService(sessionService, taskService, CLOSED_LOBBY_LIFETIME, ACTIVE_LOBBY_LIFETIME);
+    }
+
+    @Bean
+    TaskService taskService() {
+        return new TaskService();
     }
 }

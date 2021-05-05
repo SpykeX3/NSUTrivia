@@ -3,18 +3,23 @@ package ru.nsu.trivia.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.nsu.trivia.common.dto.model.LobbyState;
-import ru.nsu.trivia.common.dto.model.task.Task;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class Lobby {
+import ru.nsu.trivia.common.dto.model.LobbyState;
+import ru.nsu.trivia.common.dto.model.task.TaskDTO;
+
+@ParametersAreNonnullByDefault
+public class Lobby implements Comparable<Lobby> {
 
     private LobbyState state;
     private String id;
     private List<Player> players;
     private int round;
     private long lastUpdate;
-    private Task currentTask;
+    private TaskDTO currentTask;
+    private long taskDeadline;
     private final long creationTime;
+    private List<TaskDTO> previousTasks;
 
     public Lobby() {
         state = LobbyState.Waiting;
@@ -22,6 +27,7 @@ public class Lobby {
         currentTask = null;
         players = new ArrayList<>(2);
         creationTime = System.currentTimeMillis();
+        previousTasks = new ArrayList<>();
     }
 
 
@@ -61,12 +67,12 @@ public class Lobby {
         this.round = round;
     }
 
-    public Task getCurrentTask() {
+    public TaskDTO getCurrentTask() {
         return currentTask;
     }
 
-    public void setCurrentTask(Task currentTask) {
-        this.currentTask = currentTask;
+    public void setCurrentTask(TaskDTO currentTaskDTO) {
+        this.currentTask = currentTaskDTO;
     }
 
     public String getId() {
@@ -89,6 +95,35 @@ public class Lobby {
         this.lastUpdate = lastUpdate;
     }
 
+    public List<TaskDTO> getPreviousTasks() {
+        return previousTasks;
+    }
+
+    public void setPreviousTasks(List<TaskDTO> previousTaskDTOS) {
+        this.previousTasks = previousTaskDTOS;
+    }
+
+    public void addPreviousTask(TaskDTO taskDTO) {
+        previousTasks.add(taskDTO);
+    }
+
+    public void setNewTask(TaskDTO taskDTO) {
+        round++;
+        if (currentTask != null) {
+            addPreviousTask(currentTask);
+        }
+        setCurrentTask(taskDTO);
+        taskDeadline = System.currentTimeMillis() + currentTask.getTimeLimit();
+    }
+
+    public long getTaskDeadline() {
+        return taskDeadline;
+    }
+
+    public void setTaskDeadline(long taskDeadline) {
+        this.taskDeadline = taskDeadline;
+    }
+
     @Override
     public int hashCode() {
         return id.hashCode();
@@ -97,5 +132,10 @@ public class Lobby {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Lobby && id.equals(((Lobby) obj).id);
+    }
+
+    @Override
+    public int compareTo(Lobby o) {
+        return Long.compare(taskDeadline, o.taskDeadline);
     }
 }

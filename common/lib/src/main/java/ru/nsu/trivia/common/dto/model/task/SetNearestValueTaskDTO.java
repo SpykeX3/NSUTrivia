@@ -1,15 +1,13 @@
 package ru.nsu.trivia.common.dto.model.task;
 
-import java.util.List;
-
-public class SetNearestValueTask extends Task {
+public class SetNearestValueTaskDTO extends TaskDTO {
     private String question;
     private Integer correctAnswer;
 
-    public SetNearestValueTask() {
+    public SetNearestValueTaskDTO() {
     }
 
-    public SetNearestValueTask(String question, int correctAnswer) {
+    public SetNearestValueTaskDTO(String question, int correctAnswer) {
         this.question = question;
         this.correctAnswer = correctAnswer;
         this.type = Type.Type_answer;

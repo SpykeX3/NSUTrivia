@@ -5,19 +5,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
 import ru.nsu.trivia.common.dto.model.LobbyState;
+import ru.nsu.trivia.common.dto.model.task.Answer;
+import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer;
+import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO;
 import ru.nsu.trivia.server.model.Lobby;
 import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
@@ -30,6 +31,7 @@ public class LobbyService {
 
 
     private SessionService sessionService;
+    private TaskService taskService;
     private final long closedLobbyLifetime;
     private final long activeLobbyLifetime;
 
@@ -40,10 +42,13 @@ public class LobbyService {
             Multimaps.synchronizedSetMultimap(HashMultimap.create());
     private final RoomIDGenerator idGenerator = new RoomIDGenerator();
     private final Set<ClosedLobby> closedLobbies = Collections.synchronizedSet(new HashSet<>());
+    private final PriorityBlockingQueue<Lobby> runningLobbies = new PriorityBlockingQueue<>();
 
 
-    public LobbyService(SessionService sessionService, long closedLobbyLifetime, long activeLobbyLifetime) {
+    public LobbyService(SessionService sessionService, TaskService taskService, long closedLobbyLifetime,
+                        long activeLobbyLifetime) {
         this.sessionService = sessionService;
+        this.taskService = taskService;
         this.closedLobbyLifetime = closedLobbyLifetime;
         this.activeLobbyLifetime = activeLobbyLifetime;
     }
@@ -123,7 +128,11 @@ public class LobbyService {
         if (lobby.getState() != LobbyState.Waiting) {
             throw new RuntimeException("Lobby has already started");
         }
-        lobby.setState(LobbyState.Playing);
+        synchronized (lobby) {
+            lobby.setState(LobbyState.Playing);
+            lobby.setNewTask(taskService.generateTask());
+            runningLobbies.add(lobby);
+        }
         notifySubscribers(lobby);
     }
 
@@ -154,6 +163,35 @@ public class LobbyService {
             throw new RuntimeException("No such lobby: " + roomID);
         }
         connectToLobby(token, lobby);
+    }
+
+    public void submitAnswer(Answer answer) {
+        String token = answer.getToken();
+        Lobby lobby = playerToLobby.get(token);
+        if (lobby == null) {
+            throw new RuntimeException("Player not in any lobby");
+        }
+        if (lobby.getState() != LobbyState.Playing) {
+            throw new RuntimeException("Invalid lobby state: " + lobby.getState().toString());
+        }
+        if (lobby.getRound() != answer.getRound()) {
+            throw new RuntimeException("Invalid round " + answer.getRound() + ", current round is " + lobby.getRound());
+        }
+        synchronized (lobby) {
+            Player player =
+                    lobby.getPlayers().stream()
+                            .filter(p -> p.getToken().equals(token))
+                            .findFirst().orElseThrow(() -> new RuntimeException("Player is not in lobby " + lobby.getId()));
+            if (player.isAnswered()) {
+                throw new RuntimeException("Player already submitted answer for round " + lobby.getRound());
+            }
+            int scoreGain = taskService.getScore((SelectAnswerTaskDTO) lobby.getCurrentTask(),
+                    (SelectAnswerAnswer) answer);
+            player.setScore(player.getScore() + scoreGain);
+            if (lobby.getPlayers().stream().allMatch(Player::isAnswered)) {
+                finishRound(lobby);
+            }
+        }
     }
 
     public void connectToLobby(String token, Lobby lobby) {
@@ -213,6 +251,29 @@ public class LobbyService {
             idGenerator.recall(lobby.getId());
             closedLobbies.remove(closedLobby);
         });
+    }
+
+    @Scheduled(fixedDelay = 1500)
+    private void proceedTasks() {
+        Lobby lobby = runningLobbies.poll();
+        long time = System.currentTimeMillis();
+        while (lobby != null && lobby.getTaskDeadline() + 8000 < time) { // TODO process lag (maybe use properties)
+            synchronized (lobby) {
+                if (lobby.getState() != LobbyState.Playing) {
+                    continue;
+                }
+                finishRound(lobby);
+                lobby = runningLobbies.poll();
+            }
+        }
+    }
+
+    private void finishRound(Lobby lobby) {
+        if (lobby.getRound() == 6) {
+            deleteRoom(lobby.getId());
+            return;
+        }
+        lobby.setNewTask(taskService.generateTask());
     }
 
 }

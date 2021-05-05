@@ -5,6 +5,7 @@ import ru.nsu.trivia.server.sessions.SessionData;
 public class Player extends SessionData {
     private int score = 0;
     boolean host = false;
+    boolean answered = false;
 
     public Player() {
     }
@@ -34,5 +35,13 @@ public class Player extends SessionData {
 
     public void setHost(boolean host) {
         this.host = host;
+    }
+
+    public boolean isAnswered() {
+        return answered;
+    }
+
+    public void setAnswered(boolean answered) {
+        this.answered = answered;
     }
 }
