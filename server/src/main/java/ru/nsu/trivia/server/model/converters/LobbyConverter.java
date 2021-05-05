@@ -12,6 +12,8 @@ public class LobbyConverter {
         dto.setRound(lobby.getRound());
         dto.setState(lobby.getState());
         dto.setId(lobby.getId());
+        dto.setCurrentTask(lobby.getCurrentTask());
+        dto.setLastUpdated(lobby.getLastUpdate());
         return dto;
     }
 }

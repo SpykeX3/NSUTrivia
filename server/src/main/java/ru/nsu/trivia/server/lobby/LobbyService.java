@@ -74,16 +74,16 @@ public class LobbyService {
         return LobbyConverter.convert(lobby);
     }
 
-    public void addSubscription(String token, DeferredResult<LobbyDTO> result) {
+    public void addSubscription(String token, long lastUpdate, DeferredResult<LobbyDTO> result) {
         var lobby = playerToLobby.get(token);
         if (lobby == null) {
             throw new RuntimeException("Player not in any lobby");
         }
-        addSubscription(lobby, result);
+        addSubscription(lobby, lastUpdate, result);
     }
 
-    public void addSubscription(Lobby lobby, DeferredResult<LobbyDTO> result) {
-        if (lobby.getState() == LobbyState.Closed) {
+    public void addSubscription(Lobby lobby, long lastUpdated, DeferredResult<LobbyDTO> result) {
+        if (lobby.getState() == LobbyState.Closed || lobby.getLastUpdate() > lastUpdated) {
             notifySubscriber(result, lobby);
             return;
         }
@@ -172,6 +172,7 @@ public class LobbyService {
     }
 
     private void notifySubscribers(Lobby lobby) {
+        lobby.setLastUpdate(System.currentTimeMillis());
         subscriptions.get(lobby).forEach(res -> notifySubscriber(res, lobby));
     }
 

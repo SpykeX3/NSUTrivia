@@ -137,11 +137,12 @@ class GameServerApplicationTests {
                 LobbyDTO.class);
         CompletableFuture<LobbyDTO> lobbyFuture = new CompletableFuture<>();
         new Thread(() -> {
-            LobbyDTO lobbyDTO = restTemplate.getForObject(getUrl("lobby/subscribe?token=" + tokenUser1),
+            LobbyDTO lobbyDTO = restTemplate.getForObject(getUrl("lobby/subscribe?token=" + tokenUser1) +
+                            "&lastUpdate=" + lobby.getLastUpdated(),
                     LobbyDTO.class);
             lobbyFuture.complete(lobbyDTO);
         }).start();
-        Thread.sleep(200);
+        Thread.sleep(1000);
         restTemplate.postForObject(getUrl("lobby/join"), new JoinLobbyRequest(tokenUser2,
                 lobby.getId()), LobbyDTO.class);
         LobbyDTO subscribedLobby = lobbyFuture.get();

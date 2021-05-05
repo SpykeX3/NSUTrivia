@@ -29,9 +29,10 @@ public class LobbyController {
 
     @GetMapping(value = "/subscribe", produces =
             MediaType.APPLICATION_JSON_VALUE)
-    DeferredResult<LobbyDTO> subscribeLobbyState(@RequestParam String token) {
+    DeferredResult<LobbyDTO> subscribeLobbyState(@RequestParam String token,
+                                                 @RequestParam(defaultValue = "0") long lastUpdate) {
         DeferredResult<LobbyDTO> result = new DeferredResult<>(360000L);
-        lobbyService.addSubscription(token, result);
+        lobbyService.addSubscription(token, lastUpdate, result);
         return result;
     }
 

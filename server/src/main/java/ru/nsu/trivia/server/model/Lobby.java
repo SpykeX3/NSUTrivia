@@ -12,6 +12,7 @@ public class Lobby {
     private String id;
     private List<Player> players;
     private int round;
+    private long lastUpdate;
     private Task currentTask;
     private final long creationTime;
 
@@ -78,6 +79,14 @@ public class Lobby {
 
     public long getCreationTime() {
         return creationTime;
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(long lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     @Override

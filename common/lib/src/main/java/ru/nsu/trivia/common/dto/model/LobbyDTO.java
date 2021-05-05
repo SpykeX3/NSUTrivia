@@ -2,12 +2,16 @@ package ru.nsu.trivia.common.dto.model;
 
 import java.util.List;
 
+import ru.nsu.trivia.common.dto.model.task.Task;
+
 public class LobbyDTO {
 
     private List<PlayerInLobby> players;
     private int round;
     private LobbyState state;
-    private  String id;
+    private String id;
+    private Task currentTask;
+    private long lastUpdated;
 
     public LobbyDTO() {
     }
@@ -48,5 +52,21 @@ public class LobbyDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Task getCurrentTask() {
+        return currentTask;
+    }
+
+    public void setCurrentTask(Task currentTask) {
+        this.currentTask = currentTask;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 }
