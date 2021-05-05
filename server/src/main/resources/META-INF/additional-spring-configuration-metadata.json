@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "lobby.alive.lifetime",
+      "type": "java.lang.Long",
+      "description": "Time before active lobby is closed."
+    },
+    {
+      "name": "lobby.closed.lifetime",
+      "type": "java.lang.Long",
+      "description": "Time before closed lobby is deleted."
+    }
+  ]
+}
