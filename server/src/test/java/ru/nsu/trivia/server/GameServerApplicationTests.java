@@ -1,11 +1,7 @@
 package ru.nsu.trivia.server;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -17,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpMethod;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
+import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.common.dto.model.PlayerInLobby;
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest;
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest;
@@ -27,8 +23,8 @@ import ru.nsu.trivia.common.dto.responses.StatusResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -156,5 +152,33 @@ class GameServerApplicationTests {
                 .map(PlayerInLobby::getUsername)
                 .collect(Collectors.toList()));
     }
+
+    private LobbyDTO createLobby() {
+        LobbyDTO lobby = restTemplate.postForObject(getUrl("lobby/create"), new UsingTokenRequest(tokenUser1),
+                LobbyDTO.class);
+        return restTemplate.postForObject(getUrl("lobby/join"), new JoinLobbyRequest(tokenUser2,
+                lobby.getId()), LobbyDTO.class);
+    }
+
+    @Test
+    void startLobbyTest() throws InterruptedException, ExecutionException {
+        LobbyDTO lobby = createLobby();
+        final long lastUpdated = lobby.getLastUpdated();
+
+        CompletableFuture<LobbyDTO> lobbyFuture = new CompletableFuture<>();
+        new Thread(() -> {
+            LobbyDTO lobbyDTO = restTemplate.getForObject(getUrl("lobby/subscribe?token=" + tokenUser1) +
+                            "&lastUpdate=" + lastUpdated,
+                    LobbyDTO.class);
+            lobbyFuture.complete(lobbyDTO);
+        }).start();
+        StatusResponse resp = restTemplate.postForObject(getUrl("lobby/start"), new UsingTokenRequest(tokenUser1),
+                StatusResponse.class);
+        assertEquals(0, resp.code);
+        assertNull(resp.errors);
+        lobby = lobbyFuture.get();
+        assertEquals(LobbyState.Playing, lobby.getState());
+    }
+
 
 }
