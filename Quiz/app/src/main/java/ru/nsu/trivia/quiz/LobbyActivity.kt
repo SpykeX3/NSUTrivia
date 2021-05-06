@@ -19,11 +19,13 @@ import ru.nsu.trivia.quiz.adapters.PlayerRecyclerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
 import ru.nsu.trivia.quiz.gameFragments.TaskController
+import java.util.concurrent.Executors
 
 class LobbyActivity : AppCompatActivity() {
     private lateinit var lobbyDTO: LobbyDTO
     private val context = this
     private lateinit var adapter: PlayerRecyclerViewAdapter
+    private val exec = Executors.newFixedThreadPool(2)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class LobbyActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.room_code_text_view).text = lobbyDTO.id
 
         findViewById<Button>(R.id.button_start_game).setOnClickListener { view ->
-            StartGameTask().execute()
+            StartGameTask().executeOnExecutor(exec)
         }
         RoomSubscriber().execute()
     }
