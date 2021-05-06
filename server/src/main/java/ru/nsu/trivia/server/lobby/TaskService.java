@@ -4,13 +4,10 @@ import java.util.List;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
-import ru.nsu.trivia.common.dto.model.task.Answer;
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer;
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO;
 import ru.nsu.trivia.common.dto.model.task.TaskDTO;
 
-@Service
-@EnableScheduling
 public class TaskService {
 
     public TaskDTO generateTask() {

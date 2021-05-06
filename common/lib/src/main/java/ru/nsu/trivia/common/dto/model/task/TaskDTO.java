@@ -1,5 +1,16 @@
 package ru.nsu.trivia.common.dto.model.task;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = SelectAnswerTaskDTO.class, name = "select"),
+        @JsonSubTypes.Type(value = SetNearestValueTaskDTO.class, name = "set")
+})
 abstract public class TaskDTO {
     public enum Type {
         Select_answer,

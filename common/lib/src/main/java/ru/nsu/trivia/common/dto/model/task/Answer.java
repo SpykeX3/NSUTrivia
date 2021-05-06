@@ -1,7 +1,17 @@
 package ru.nsu.trivia.common.dto.model.task;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = SelectAnswerAnswer.class, name = "selectAnswer"),
+        @JsonSubTypes.Type(value = SetNearestValueAnswer.class, name = "setAnswer")
+})
 abstract public class Answer extends UsingTokenRequest {
     int round;
 
