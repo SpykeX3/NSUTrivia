@@ -274,6 +274,7 @@ public class LobbyService {
             return;
         }
         lobby.setNewTask(taskService.generateTask());
+        notifySubscribers(lobby);
     }
 
 }
