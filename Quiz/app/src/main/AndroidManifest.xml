@@ -4,6 +4,14 @@
     package="ru.nsu.trivia.quiz">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -13,12 +21,12 @@
         android:theme="@style/Theme.Quiz"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".gameFragments.SelectAnswerTaskActivity"
+            android:theme="@style/Theme.Quiz.NoActionBar"/>
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
-        <activity
-            android:name=".QuizActivity"
-            android:theme="@style/Theme.Quiz.NoActionBar" />
         <activity
             android:name=".LobbyActivity"
             android:theme="@style/Theme.Quiz.NoActionBar" />

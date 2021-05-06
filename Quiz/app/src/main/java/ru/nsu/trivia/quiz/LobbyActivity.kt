@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
+import ru.nsu.trivia.common.dto.model.LobbyState
 import ru.nsu.trivia.common.dto.model.PlayerInLobby
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.adapters.PlayerRecyclerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
+import ru.nsu.trivia.quiz.gameFragments.TaskController
 
 class LobbyActivity : AppCompatActivity() {
     private lateinit var lobbyDTO: LobbyDTO
@@ -27,33 +29,28 @@ class LobbyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lobby)
         val objectMapper = ObjectMapper()
-        lobbyDTO = intent.extras?.getString("lobbyDTO")?.let { objectMapper.readValue<LobbyDTO>(it) }!!
+        lobbyDTO =
+            intent.extras?.getString("lobbyDTO")?.let { objectMapper.readValue<LobbyDTO>(it) }!!
 
         fillRecyclerView()
 
-        if (intent.extras?.getBoolean("isHost") == false){
-           findViewById<Button>(R.id.button_start_game).visibility = View.INVISIBLE
-        }
-
-
-        if (lobbyDTO == null){
-            //TODO: и вот чё это за фигня? это не возможно, но надо бы придумать, как с этим жить, если вдруг баганёт
+        if (intent.extras?.getBoolean("isHost") == false) {
+            findViewById<Button>(R.id.button_start_game).visibility = View.INVISIBLE
         }
 
         findViewById<TextView>(R.id.room_code_text_view).text = lobbyDTO.id
 
-        findViewById<Button>(R.id.button_start_game).setOnClickListener{ view ->
-            val intent = Intent(this, QuizActivity::class.java)
-            startActivity(intent)
+        findViewById<Button>(R.id.button_start_game).setOnClickListener { view ->
+            StartGameTask().execute()
         }
         RoomSubscriber().execute()
     }
 
-    private fun getRoomUsers(): List<PlayerInLobby>{
+    private fun getRoomUsers(): List<PlayerInLobby> {
         return lobbyDTO.players
     }
 
-    fun shareRoomCode(view: View){
+    fun shareRoomCode(view: View) {
         val sendIntent = Intent()
         sendIntent.action = Intent.ACTION_SEND
         sendIntent.putExtra(Intent.EXTRA_TEXT, lobbyDTO.id)
@@ -64,7 +61,7 @@ class LobbyActivity : AppCompatActivity() {
     }
 
 
-    private fun fillRecyclerView(){
+    private fun fillRecyclerView() {
         val response = ArrayList<PlayerInLobby>()
         response.addAll(getRoomUsers())
         adapter = PlayerRecyclerViewAdapter(this, response)
@@ -75,21 +72,30 @@ class LobbyActivity : AppCompatActivity() {
         mRecyclerView.adapter = adapter
     }
 
-    private inner class RoomSubscriber: AsyncTask<Void, Integer, LobbyDTO?>() {
+    private inner class StartGameTask : AsyncTask<Void, Int, LobbyDTO?>() {
 
         override fun onPostExecute(result: LobbyDTO?) {
-            //TODO: start game
-            if (lobbyDTO != null) {
-                RoomSubscriber().execute()
-                adapter.notifyDataSetChanged()
+            GetTask().execute()
+        }
+
+        override fun doInBackground(vararg params: Void?): LobbyDTO? {
+            Thread.sleep(500)
+            APIConnector.doPost("lobby/start", TokenController.getToken(context))
+            return null
+        }
+    }
+
+    private inner class GetTask : AsyncTask<Void, Int, LobbyDTO?>() {
+
+        override fun onPostExecute(result: LobbyDTO?) {
+            if (result != null) {
+                val controller = TaskController(this@LobbyActivity)
+                controller.goToTaskActivity(result)
             }
         }
 
         override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            Thread.sleep(500);
-            val request = UsingTokenRequest()
-            request.token = TokenController.getToken(context)
-            val lobby = APIConnector.doGet("lobby/get", request)
+            val lobby = APIConnector.doGet("lobby/get", TokenController.getToken(context))
             if (!lobby.equals("")) {
                 val objectMapper = ObjectMapper()
                 lobbyDTO = objectMapper.readValue<LobbyDTO>(lobby)
@@ -100,7 +106,37 @@ class LobbyActivity : AppCompatActivity() {
         }
     }
 
-    private inner class LeaveRoom: AsyncTask<Void, Integer, LobbyDTO?>() {
+    private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
+
+        override fun onPostExecute(result: LobbyDTO?) {
+            if (lobbyDTO != null) {
+
+                if (lobbyDTO.state == LobbyState.Playing){
+                    GetTask().execute()
+                } else if (lobbyDTO.state == LobbyState.Waiting) {
+                    RoomSubscriber().execute()
+                    adapter.notifyDataSetChanged()
+                }
+                else if (lobbyDTO.state == LobbyState.Closed){
+
+                }
+            }
+        }
+
+        override fun doInBackground(vararg params: Void?): LobbyDTO? {
+            val lobby =
+                APIConnector.doLongPoling("lobby/subscribe", TokenController.getToken(context), lobbyDTO.lastUpdated)
+            if (!lobby.equals("")) {
+                val objectMapper = ObjectMapper()
+                lobbyDTO = objectMapper.readValue<LobbyDTO>(lobby)
+                adapter.setResponseListToNew(lobbyDTO.players)
+                return lobbyDTO
+            }
+            return null
+        }
+    }
+
+    private inner class LeaveRoom : AsyncTask<Void, Int, LobbyDTO?>() {
 
         override fun doInBackground(vararg params: Void?): LobbyDTO? {
             val request = UsingTokenRequest()
