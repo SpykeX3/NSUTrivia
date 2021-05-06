@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -16,6 +17,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
 import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.common.dto.model.PlayerInLobby;
+import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer;
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest;
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest;
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
@@ -128,6 +130,7 @@ class GameServerApplicationTests {
     }
 
     @Test
+    @Timeout(value = 5)
     void subscriptionTest() throws ExecutionException, InterruptedException {
         LobbyDTO lobby = restTemplate.postForObject(getUrl("lobby/create"), new UsingTokenRequest(tokenUser1),
                 LobbyDTO.class);
@@ -161,6 +164,7 @@ class GameServerApplicationTests {
     }
 
     @Test
+    @Timeout(value = 5)
     void startLobbyTest() throws InterruptedException, ExecutionException {
         LobbyDTO lobby = createLobby();
         final long lastUpdated = lobby.getLastUpdated();
@@ -178,6 +182,42 @@ class GameServerApplicationTests {
         assertNull(resp.errors);
         lobby = lobbyFuture.get();
         assertEquals(LobbyState.Playing, lobby.getState());
+        assertNotNull(lobby.getCurrentTask());
+    }
+
+    @Test
+    @Timeout(value = 5)
+    void submitAnswerTest() throws InterruptedException, ExecutionException {
+        createLobby();
+        StatusResponse resp = restTemplate.postForObject(getUrl("lobby/start"), new UsingTokenRequest(tokenUser1),
+                StatusResponse.class);
+        assertEquals(0, resp.code);
+        assertNull(resp.errors);
+        LobbyDTO lobby = restTemplate.getForObject(getUrl("lobby/get?token=" + tokenUser1), LobbyDTO.class);
+        assertEquals(LobbyState.Playing, lobby.getState());
+        assertNotNull(lobby.getCurrentTask());
+        final long lastUpdated = lobby.getLastUpdated();
+
+        CompletableFuture<LobbyDTO> lobbyFuture = new CompletableFuture<>();
+        new Thread(() -> {
+            LobbyDTO lobbyDTO = restTemplate.getForObject(getUrl("lobby/subscribe?token=" + tokenUser1) +
+                            "&lastUpdate=" + lastUpdated,
+                    LobbyDTO.class);
+            lobbyFuture.complete(lobbyDTO);
+        }).start();
+        StatusResponse submit1 = restTemplate.postForObject(getUrl("lobby/answer"),
+                new SelectAnswerAnswer(tokenUser1, 1, 1), StatusResponse.class);
+        assertEquals(0, submit1.code);
+        assertNull(submit1.errors);
+        StatusResponse submit2 = restTemplate.postForObject(getUrl("lobby/answer"),
+                new SelectAnswerAnswer(tokenUser2, 0, 1), StatusResponse.class);
+        assertEquals(0, submit2.code);
+        assertNull(submit2.errors);
+
+        lobby = lobbyFuture.get();
+        assertEquals(2, lobby.getRound());
+        assertEquals(0, lobby.getPlayers().get(0).getScore());
+        assertTrue(lobby.getPlayers().get(1).getScore() > 0);
     }
 
 

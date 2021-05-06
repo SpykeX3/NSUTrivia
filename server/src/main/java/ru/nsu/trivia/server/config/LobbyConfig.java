@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import ru.nsu.trivia.server.lobby.HardcodedTaskService;
 import ru.nsu.trivia.server.lobby.LobbyService;
 import ru.nsu.trivia.server.lobby.TaskService;
 import ru.nsu.trivia.server.sessions.SessionService;
@@ -26,6 +27,6 @@ public class LobbyConfig {
 
     @Bean
     TaskService taskService() {
-        return new TaskService();
+        return new HardcodedTaskService();
     }
 }

@@ -77,7 +77,7 @@ public class LobbyController {
     @PostMapping(value = "/answer", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
             MediaType.APPLICATION_JSON_VALUE)
     StatusResponse submitAnswer(@RequestBody Answer answer) {
-
+        lobbyService.submitAnswer(answer);
         return new StatusResponse(0);
     }
 }

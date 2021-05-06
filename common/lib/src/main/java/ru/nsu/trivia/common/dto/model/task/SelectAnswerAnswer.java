@@ -7,8 +7,8 @@ public class SelectAnswerAnswer extends Answer {
         super();
     }
 
-    public SelectAnswerAnswer(String token, int variantId) {
-        super(token);
+    public SelectAnswerAnswer(String token, int variantId, int round) {
+        super(token, round);
         this.variantId = variantId;
     }
 

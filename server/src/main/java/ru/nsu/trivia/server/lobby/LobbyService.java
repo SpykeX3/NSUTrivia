@@ -188,6 +188,7 @@ public class LobbyService {
             int scoreGain = taskService.getScore((SelectAnswerTaskDTO) lobby.getCurrentTask(),
                     (SelectAnswerAnswer) answer);
             player.setScore(player.getScore() + scoreGain);
+            player.setAnswered(true);
             if (lobby.getPlayers().stream().allMatch(Player::isAnswered)) {
                 finishRound(lobby);
             }
@@ -274,6 +275,7 @@ public class LobbyService {
             return;
         }
         lobby.setNewTask(taskService.generateTask());
+        lobby.getPlayers().forEach(p -> p.setAnswered(false));
         notifySubscribers(lobby);
     }
 
