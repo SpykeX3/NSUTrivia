@@ -74,10 +74,6 @@ class LobbyActivity : AppCompatActivity() {
 
     private inner class StartGameTask : AsyncTask<Void, Int, LobbyDTO?>() {
 
-        override fun onPostExecute(result: LobbyDTO?) {
-            GetTask().execute()
-        }
-
         override fun doInBackground(vararg params: Void?): LobbyDTO? {
             Thread.sleep(500)
             APIConnector.doPost("lobby/start", TokenController.getToken(context))
@@ -112,7 +108,8 @@ class LobbyActivity : AppCompatActivity() {
             if (lobbyDTO != null) {
 
                 if (lobbyDTO.state == LobbyState.Playing){
-                    GetTask().execute()
+                    val controller = TaskController(this@LobbyActivity)
+                    controller.goToTaskActivity(lobbyDTO)
                 } else if (lobbyDTO.state == LobbyState.Waiting) {
                     RoomSubscriber().execute()
                     adapter.notifyDataSetChanged()
@@ -148,6 +145,8 @@ class LobbyActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        LeaveRoom().execute()
+        if (lobbyDTO.state == LobbyState.Waiting) {
+            LeaveRoom().execute()
+        }
     }
 }

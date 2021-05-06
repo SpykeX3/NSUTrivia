@@ -23,7 +23,7 @@ public class APIConnector {
     private static String serverAddress = "http://10.0.2.2:4888/";
 
     public static String doLongPoling(String url, String token, long lastUpdate) throws IOException {
-        URL obj = new URL(serverAddress + url + "?token=" + token + "?lastUpdate" + lastUpdate);
+        URL obj = new URL(serverAddress + url + "?token=" + token + "&lastUpdate=" + lastUpdate);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         con.setConnectTimeout(36000000);
