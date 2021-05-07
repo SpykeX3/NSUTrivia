@@ -19,6 +19,7 @@ public class Lobby implements Comparable<Lobby> {
     private TaskDTO currentTask;
     private long taskDeadline;
     private final long creationTime;
+    private GameConfiguration gameConfiguration;
     private List<TaskDTO> previousTasks;
 
     public Lobby() {
@@ -113,7 +114,7 @@ public class Lobby implements Comparable<Lobby> {
             addPreviousTask(currentTask);
         }
         setCurrentTask(taskDTO);
-        taskDeadline = System.currentTimeMillis() + currentTask.getTimeLimit();
+        setTaskDeadline(System.currentTimeMillis() + currentTask.getTimeLimit());
     }
 
     public long getTaskDeadline() {
@@ -122,6 +123,14 @@ public class Lobby implements Comparable<Lobby> {
 
     public void setTaskDeadline(long taskDeadline) {
         this.taskDeadline = taskDeadline;
+    }
+
+    public GameConfiguration getGameConfiguration() {
+        return gameConfiguration;
+    }
+
+    public void setGameConfiguration(GameConfiguration gameConfiguration) {
+        this.gameConfiguration = gameConfiguration;
     }
 
     @Override

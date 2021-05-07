@@ -7,10 +7,11 @@ import ru.nsu.trivia.common.dto.model.task.Answer;
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer;
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO;
 import ru.nsu.trivia.common.dto.model.task.TaskDTO;
+import ru.nsu.trivia.server.model.Lobby;
 
 public class HardcodedTaskService implements TaskService {
 
-    public TaskDTO generateTask() {
+    public TaskDTO generateTask(Lobby lobby) {
         var task = new SelectAnswerTaskDTO();
         task.setType(TaskDTO.Type.Select_answer);
         task.setQuestion("Select A");

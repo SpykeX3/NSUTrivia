@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
+import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.common.dto.model.task.Answer;
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest;
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
@@ -47,7 +48,7 @@ public class LobbyController {
             return lobbyService.getLobbyById(roomId);
         } catch (Exception e) {
             if (roomId != null) {
-                lobbyService.deleteRoom(roomId);
+                lobbyService.deleteRoom(roomId, LobbyState.Closed);
             }
             throw new RuntimeException(e);
         }

@@ -1,7 +1,9 @@
 package ru.nsu.trivia.server.lobby;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,8 +19,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
 import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.common.dto.model.task.Answer;
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer;
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO;
+import ru.nsu.trivia.common.dto.model.task.TaskDTO;
+import ru.nsu.trivia.server.model.GameConfiguration;
 import ru.nsu.trivia.server.model.Lobby;
 import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
@@ -30,8 +32,8 @@ public class LobbyService {
     private static Logger LOG = Logger.getLogger(LobbyService.class.getName());
 
 
-    private SessionService sessionService;
-    private TaskService taskService;
+    private final SessionService sessionService;
+    private final TaskService taskService;
     private final long closedLobbyLifetime;
     private final long activeLobbyLifetime;
 
@@ -44,6 +46,8 @@ public class LobbyService {
     private final Set<ClosedLobby> closedLobbies = Collections.synchronizedSet(new HashSet<>());
     private final PriorityBlockingQueue<Lobby> runningLobbies = new PriorityBlockingQueue<>();
 
+    private final GameConfiguration gameConfiguration = new GameConfiguration(
+            List.of(TaskDTO.Type.Select_answer, TaskDTO.Type.Select_answer, TaskDTO.Type.Select_answer));
 
     public LobbyService(SessionService sessionService, TaskService taskService, long closedLobbyLifetime,
                         long activeLobbyLifetime) {
@@ -99,16 +103,17 @@ public class LobbyService {
         String id = idGenerator.generate();
         Lobby lobby = new Lobby();
         lobby.setId(id);
+        lobby.setGameConfiguration(gameConfiguration);
         roomIDToLobby.put(id, lobby);
         return id;
     }
 
-    public void deleteRoom(String id) {
+    public void deleteRoom(String id, LobbyState state) {
         Lobby lobby = roomIDToLobby.get(id);
         if (lobby == null) {
             return;
         }
-        lobby.setState(LobbyState.Closed);
+        lobby.setState(state);
         notifySubscribers(lobby);
         closedLobbies.add(new ClosedLobby(lobby, System.currentTimeMillis()));
     }
@@ -130,7 +135,7 @@ public class LobbyService {
         }
         synchronized (lobby) {
             lobby.setState(LobbyState.Playing);
-            lobby.setNewTask(taskService.generateTask());
+            lobby.setNewTask(taskService.generateTask(lobby));
             runningLobbies.add(lobby);
         }
         notifySubscribers(lobby);
@@ -150,7 +155,7 @@ public class LobbyService {
                             .isHost();
             lobby.removePlayer(playerByToken(token));
             if (isHost) {
-                deleteRoom(lobby.getId());
+                deleteRoom(lobby.getId(), LobbyState.Closed);
             }
             notifySubscribers(lobby);
 
@@ -185,8 +190,7 @@ public class LobbyService {
             if (player.isAnswered()) {
                 throw new RuntimeException("Player already submitted answer for round " + lobby.getRound());
             }
-            int scoreGain = taskService.getScore((SelectAnswerTaskDTO) lobby.getCurrentTask(),
-                    (SelectAnswerAnswer) answer);
+            int scoreGain = taskService.getScore(lobby.getCurrentTask(), answer);
             player.setScore(player.getScore() + scoreGain);
             player.setAnswered(true);
             if (lobby.getPlayers().stream().allMatch(Player::isAnswered)) {
@@ -232,7 +236,7 @@ public class LobbyService {
 
         long count = roomIDToLobby.values().stream()
                 .filter(lobby -> time - lobby.getCreationTime() > activeLobbyLifetime)
-                .peek(lobby -> deleteRoom(lobby.getId()))
+                .peek(lobby -> deleteRoom(lobby.getId(), LobbyState.Closed))
                 .count();
         LOG.info("zombieLobbyMarker marked " + count + " lobbies");
         LOG.info("Currently active lobbies: " + roomIDToLobby.values().size());
@@ -259,7 +263,7 @@ public class LobbyService {
     private void proceedTasks() {
         Lobby lobby = runningLobbies.poll();
         long time = System.currentTimeMillis();
-        while (lobby != null && lobby.getTaskDeadline() + 8000 < time) { // TODO process lag (maybe use properties)
+        while (lobby != null && lobby.getTaskDeadline() + 10000 < time) { // TODO process lag (maybe use properties)
             synchronized (lobby) {
                 if (lobby.getState() != LobbyState.Playing) {
                     continue;
@@ -271,11 +275,11 @@ public class LobbyService {
     }
 
     private void finishRound(Lobby lobby) {
-        if (lobby.getRound() == 6) {
-            deleteRoom(lobby.getId());
+        if (lobby.getRound() > lobby.getGameConfiguration().getTaskTypes().size()) {
+            deleteRoom(lobby.getId(), LobbyState.Finished);
             return;
         }
-        lobby.setNewTask(taskService.generateTask());
+        lobby.setNewTask(taskService.generateTask(lobby));
         lobby.getPlayers().forEach(p -> p.setAnswered(false));
         notifySubscribers(lobby);
     }
