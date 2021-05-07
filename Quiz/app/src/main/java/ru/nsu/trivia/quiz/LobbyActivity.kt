@@ -83,42 +83,18 @@ class LobbyActivity : AppCompatActivity() {
         }
     }
 
-    private inner class GetTask : AsyncTask<Void, Int, LobbyDTO?>() {
-
-        override fun onPostExecute(result: LobbyDTO?) {
-            if (result != null) {
-                val controller = TaskController(this@LobbyActivity)
-                controller.goToTaskActivity(result)
-            }
-        }
-
-        override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            val lobby = APIConnector.doGet("lobby/get", TokenController.getToken(context))
-            if (!lobby.equals("")) {
-                val objectMapper = ObjectMapper()
-                lobbyDTO = objectMapper.readValue<LobbyDTO>(lobby)
-                adapter.setResponseListToNew(lobbyDTO.players)
-                return lobbyDTO
-            }
-            return null
-        }
-    }
-
     private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
 
         override fun onPostExecute(result: LobbyDTO?) {
-            if (lobbyDTO != null) {
+            if (lobbyDTO.state == LobbyState.Playing){
+                val controller = TaskController(this@LobbyActivity)
+                controller.goToTaskActivity(lobbyDTO)
+            } else if (lobbyDTO.state == LobbyState.Waiting) {
+                RoomSubscriber().execute()
+                adapter.notifyDataSetChanged()
+            }
+            else if (lobbyDTO.state == LobbyState.Closed){
 
-                if (lobbyDTO.state == LobbyState.Playing){
-                    val controller = TaskController(this@LobbyActivity)
-                    controller.goToTaskActivity(lobbyDTO)
-                } else if (lobbyDTO.state == LobbyState.Waiting) {
-                    RoomSubscriber().execute()
-                    adapter.notifyDataSetChanged()
-                }
-                else if (lobbyDTO.state == LobbyState.Closed){
-
-                }
             }
         }
 
