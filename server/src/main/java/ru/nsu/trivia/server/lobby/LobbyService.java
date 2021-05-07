@@ -212,7 +212,8 @@ public class LobbyService {
 
     private void notifySubscribers(Lobby lobby) {
         lobby.setLastUpdate(System.currentTimeMillis());
-        subscriptions.get(lobby).forEach(res -> notifySubscriber(res, lobby));
+        List<DeferredResult<LobbyDTO>> subs = new ArrayList<>(subscriptions.get(lobby));
+        subs.forEach(res -> notifySubscriber(res, lobby));
     }
 
     private void notifySubscriber(DeferredResult<LobbyDTO> result, Lobby lobby) {
