@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_row="3"
     android:layout_column="2"
-    android:background="@drawable/mountain"
+    android:background="@drawable/app_background"
     android:orientation="vertical">
 
     <TextView
@@ -22,7 +22,7 @@
         android:paddingEnd="25dp"
         android:paddingBottom="5dp"
         android:text="Room code"
-        android:textColor="@color/gray_700"
+        android:textColor="@color/gray_200"
         android:textSize="44sp"
         android:textStyle="bold"
         app:autoSizeMaxTextSize="100sp"
@@ -55,13 +55,14 @@
             android:focusable="true"
             android:gravity="bottom"
             android:text="Room"
-            android:textColor="@color/gray_700"
+            android:textColor="@color/gray_200"
             android:textSize="44sp"
             android:textStyle="bold"
             app:autoSizeMaxTextSize="100sp"
             app:autoSizeMinTextSize="12sp"
             app:autoSizeStepGranularity="2sp"
-            app:autoSizeTextType="uniform" />
+            app:autoSizeTextType="uniform"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:layout_width="40dp"

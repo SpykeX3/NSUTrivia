@@ -1,9 +1,6 @@
 package ru.nsu.trivia.server.lobby;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.logging.Logger;
@@ -259,7 +256,7 @@ public class LobbyService {
     private void proceedTasks() {
         Lobby lobby = runningLobbies.poll();
         long time = System.currentTimeMillis();
-        while (lobby != null && lobby.getTaskDeadline() + 8000 < time) { // TODO process lag (maybe use properties)
+        while (lobby != null && lobby.getTaskDeadline() - 8000 < time) { // TODO process lag (maybe use properties)
             synchronized (lobby) {
                 if (lobby.getState() != LobbyState.Playing) {
                     continue;

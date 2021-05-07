@@ -7,7 +7,7 @@
     tools:context=".gameFragments.SelectAnswerTaskActivity"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/mountain">
+    android:background="@drawable/app_background">
 
     <TextView
         android:id="@+id/text_view_question"

@@ -21,12 +21,16 @@
         android:theme="@style/Theme.Quiz"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".gameFragments.SelectAnswerTaskActivity"
-            android:theme="@style/Theme.Quiz.NoActionBar"/>
+        <activity android:name=".gameFragments.ResultsActivity"
+            android:theme="@style/Theme.Quiz.NoActionBar" ></activity>
+        <activity
+            android:name=".gameFragments.SelectAnswerTaskActivity"
+            android:theme="@style/Theme.Quiz.NoActionBar" />
 
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
         <activity
             android:name=".LobbyActivity"
             android:theme="@style/Theme.Quiz.NoActionBar" />

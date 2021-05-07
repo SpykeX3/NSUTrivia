@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:columnCount="2"
-    android:rowCount="2">
+    android:rowCount="2"
+    android:background="@drawable/buttons_corner"
+    android:layout_margin="10dp">
 
 
     <TextView
@@ -38,7 +40,7 @@
     <TextView
         android:layout_row="1"
         android:layout_column="1"
-        android:id="@+id/position"
+        android:id="@+id/winner"
         android:layout_width="30sp"
         android:layout_height="30sp"
         android:layout_marginTop="5dp"
@@ -47,5 +49,5 @@
         android:layout_gravity="end"
         android:gravity="center"
         android:textSize="16sp"
-        android:text="T" />
+        android:text="1" />
 </GridLayout>

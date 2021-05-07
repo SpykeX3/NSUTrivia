@@ -1,6 +1,7 @@
 package ru.nsu.trivia.quiz.gameFragments
 
 import android.app.Activity
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
@@ -49,7 +50,8 @@ class SelectAnswerTaskActivity : Activity() {
         findViewById<TextView>(R.id.text_view_question).text = task.question
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        progressBar.max = 10
+        progressBar.max = lobby.taskDeadline.toInt()
+
         val handler = Handler(Looper.getMainLooper())
         val time = System.currentTimeMillis()
         handler.post(object : Runnable {
@@ -67,7 +69,11 @@ class SelectAnswerTaskActivity : Activity() {
     }
 
     fun goToLobbyResult() {
-        //TODO: SHOW RESULTS AFTER ROUND
+        val intent = Intent(this, ResultsActivity::class.java)
+        val ow = ObjectMapper().writer().withDefaultPrettyPrinter()
+        val json = ow.writeValueAsString(lobby)
+        intent.putExtra("LobbyDTO", json)
+        startActivity(intent)
     }
 
     fun showCorrect(id: Int) {
@@ -90,6 +96,5 @@ class SelectAnswerTaskActivity : Activity() {
             super.onPostExecute(result)
             goToLobbyResult()
         }
-
     }
 }

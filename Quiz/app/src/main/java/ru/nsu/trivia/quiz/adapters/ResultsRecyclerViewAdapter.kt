@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.nsu.trivia.common.dto.model.PlayerInLobby
 import ru.nsu.trivia.quiz.R
 
-class ResultsRecyclerViewAdapter(var context: Context, var responseList: List<PlayerInLobby>) :
+class ResultsRecyclerViewAdapter(var context: Context, var responseList: ArrayList<PlayerInLobby>) :
     RecyclerView.Adapter<ResultsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,15 +21,8 @@ class ResultsRecyclerViewAdapter(var context: Context, var responseList: List<Pl
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val request = responseList[position]
         holder.textView.text = request.username
-        /*holder.textView.setOnClickListener{ view ->
-        //TODO: fix correctness
-            (context as QuizActivity).showCorrect(view)
-        }*/
-        holder.imageView.visibility = if (request.isHost){
-            View.VISIBLE
-        } else{
-            View.INVISIBLE
-        }
+        holder.points.text = request.score.toString()
+        holder.position.visibility = View.INVISIBLE
     }
 
     override fun getItemCount(): Int {
@@ -38,6 +31,7 @@ class ResultsRecyclerViewAdapter(var context: Context, var responseList: List<Pl
 
     class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.player_name)
-        val imageView: ImageView = view.findViewById(R.id.ready_image)
+        val points: TextView = view.findViewById(R.id.points)
+        val position:TextView = view.findViewById(R.id.winner)
     }
 }

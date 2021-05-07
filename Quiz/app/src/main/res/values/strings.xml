@@ -32,4 +32,5 @@
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
+    <string name="waiting_for_other_players">Waiting for other players...</string>
 </resources>

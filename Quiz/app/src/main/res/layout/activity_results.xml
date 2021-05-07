@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_background"
+    android:orientation="vertical"
+    tools:context=".gameFragments.ResultsActivity">
+
+    <TextView
+        android:id="@+id/round_num_text_view"
+        android:layout_width="151dp"
+        android:layout_height="57dp"
+        android:layout_rowSpan="1"
+        android:layout_columnSpan="1"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:focusable="false"
+        android:gravity="bottom"
+        android:paddingEnd="25dp"
+        android:paddingBottom="5dp"
+        android:text="Round"
+        android:textColor="@color/gray_200"
+        android:textSize="44sp"
+        android:textStyle="bold"
+        app:autoSizeMaxTextSize="100sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeStepGranularity="2sp"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/result_view_results"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/round_num_text_view"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray_0500"
+        android:id="@+id/animationView"
+        android:layout_gravity="center"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
