@@ -32,6 +32,8 @@ android {
     }}
 
 dependencies {
+    implementation 'androidx.leanback:leanback:1.0.0'
+    implementation 'com.github.bumptech.glide:glide:3.8.0'
     def lottieVersion = "3.4.0"
     implementation "com.airbnb.android:lottie:$lottieVersion"
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3'

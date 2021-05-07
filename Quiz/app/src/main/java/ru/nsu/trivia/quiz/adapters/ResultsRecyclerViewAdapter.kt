@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.nsu.trivia.common.dto.model.PlayerInLobby
-import ru.nsu.trivia.quiz.QuizActivity
 import ru.nsu.trivia.quiz.R
 
 class ResultsRecyclerViewAdapter(var context: Context, var responseList: List<PlayerInLobby>) :
@@ -22,9 +21,10 @@ class ResultsRecyclerViewAdapter(var context: Context, var responseList: List<Pl
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val request = responseList[position]
         holder.textView.text = request.username
-        holder.textView.setOnClickListener{ view ->
+        /*holder.textView.setOnClickListener{ view ->
+        //TODO: fix correctness
             (context as QuizActivity).showCorrect(view)
-        }
+        }*/
         holder.imageView.visibility = if (request.isHost){
             View.VISIBLE
         } else{

@@ -4,13 +4,15 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerTask
+import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO
 import ru.nsu.trivia.quiz.R
+import ru.nsu.trivia.quiz.gameFragments.SelectAnswerTaskActivity
 
-class VariantsRecyclerViewAdapter(var context: Context, var responseList: SelectAnswerTask) :
-    RecyclerView.Adapter<VariantsRecyclerViewAdapter.ViewHolder>() {
+class SelectAnswerViewAdapter(var context: Context, var responseList: SelectAnswerTaskDTO) :
+    RecyclerView.Adapter<SelectAnswerViewAdapter.ViewHolder>() {
     private var showCorrect = false
     private var selectedItem = 0
     private var correct = 0
@@ -21,12 +23,14 @@ class VariantsRecyclerViewAdapter(var context: Context, var responseList: Select
     }
 
     fun showCorrect(selectedItem: Int, correct: Int){
-        this.selectedItem = selectedItem
-        showCorrect = true
-        this.correct = correct
+        if (!showCorrect) {
+            this.selectedItem = selectedItem
+            showCorrect = true
+            this.correct = correct
+        }
     }
 
-    override fun onBindViewHolder(holder: VariantsRecyclerViewAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SelectAnswerViewAdapter.ViewHolder, position: Int) {
         val request = responseList.variants[position]
         holder.textView.text = request
         if (showCorrect){
@@ -35,6 +39,11 @@ class VariantsRecyclerViewAdapter(var context: Context, var responseList: Select
             }
             if (correct != position && position == selectedItem){
                 holder.textView.background = context.getDrawable(R.drawable.incorrect_ans_background)
+            }
+        }
+        else{
+            holder.textView.setOnClickListener { view ->
+                (context as SelectAnswerTaskActivity).showCorrect(position)
             }
         }
     }

@@ -4,5 +4,4 @@
     android:layout_height="50dp"
     android:layout_weight="1"
     style="@style/Answer"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:onClick="showCorrect"/>
+    xmlns:android="http://schemas.android.com/apk/res/android"/>
