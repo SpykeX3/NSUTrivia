@@ -99,13 +99,16 @@ class LobbyActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            val lobby =
+            val result =
                 APIConnector.doLongPoling("lobby/subscribe", TokenController.getToken(context), lobbyDTO.lastUpdated)
-            if (!lobby.equals("")) {
+            if (result.code == 200) {
                 val objectMapper = ObjectMapper()
-                lobbyDTO = objectMapper.readValue<LobbyDTO>(lobby)
+                lobbyDTO = objectMapper.readValue<LobbyDTO>(result.responce)
                 adapter.setResponseListToNew(lobbyDTO.players)
                 return lobbyDTO
+            }
+            else{
+                //TODO
             }
             return null
         }

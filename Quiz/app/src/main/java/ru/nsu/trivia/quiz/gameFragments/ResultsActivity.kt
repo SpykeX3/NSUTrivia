@@ -54,16 +54,18 @@ class ResultsActivity : AppCompatActivity() {
     inner class WaitForUpdate : AsyncTask<Int, Int, Int>() {
 
         override fun doInBackground(vararg params: Int?): Int {
-            val json = APIConnector.doLongPoling(
+            val result = APIConnector.doLongPoling(
                 "lobby/subscribe",
                 TokenController.getToken(this@ResultsActivity),
                 lobby.lastUpdated
             )
 
-            if (!json.equals("")) {
+            if (result.code == 200) {
                 val objectMapper = ObjectMapper()
-                lobby = objectMapper.readValue<LobbyDTO>(json)
+                lobby = objectMapper.readValue<LobbyDTO>(result.responce)
                 adapter.responseList.addAll(ArrayList(lobby.players))
+            } else {
+                //TODO
             }
             return 0
         }
@@ -71,7 +73,7 @@ class ResultsActivity : AppCompatActivity() {
         override fun onPostExecute(result: Int?) {
             super.onPostExecute(result)
             findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.round_num_text_view).setText("Round " + (lobby.round-1))
+            findViewById<TextView>(R.id.round_num_text_view).setText("Round " + (lobby.round - 1))
             adapter.notifyDataSetChanged()
             GOTO().execute()
         }
