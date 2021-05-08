@@ -107,7 +107,7 @@ class MenuActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Void?): String? {
-            if (TokenController.isTokenSaved(context)){
+            if (!TokenController.isTokenSaved(context)){
                 Log.d("Token", TokenController.getToken(context))
                 return TokenController.getToken(context)
             }

@@ -6,6 +6,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +29,7 @@ class SelectAnswerTaskActivity : Activity() {
     private var mLayoutManager = LinearLayoutManager(this)
     private lateinit var lobby: LobbyDTO
     private var currRound by Delegates.notNull<Int>()
+    private var isAnswered = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,17 +52,17 @@ class SelectAnswerTaskActivity : Activity() {
         findViewById<TextView>(R.id.text_view_question).text = task.question
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
-        progressBar.max = lobby.taskDeadline.toInt()
-
+        progressBar.max = lobby.currentTask.timeLimit/1000
         val handler = Handler(Looper.getMainLooper())
         val time = System.currentTimeMillis()
         handler.post(object : Runnable {
             override fun run() {
-                if (Math.abs(System.currentTimeMillis() - time) < 10 * 1000) {
-                    progressBar.progress =
-                        Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    handler.postDelayed(this, 1000)
-                    println(-System.currentTimeMillis() + time)
+                if (!isAnswered) {
+                    if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
+                        progressBar.progress = Math.abs(System.currentTimeMillis() - time).toInt() / 1000
+                        Log.d("Tag", (Math.abs(System.currentTimeMillis() - time).toInt() / 1000).toString())
+                        handler.postDelayed(this, 1000)
+                    }
                 } else {
                     goToLobbyResult()
                 }
@@ -83,6 +85,11 @@ class SelectAnswerTaskActivity : Activity() {
     }
 
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {
+        override fun onPreExecute() {
+            super.onPreExecute()
+            isAnswered = true
+        }
+
         override fun doInBackground(vararg params: Int?): Int {
             val answer = SelectAnswerAnswer()
             answer.variantId = params[0]!!
