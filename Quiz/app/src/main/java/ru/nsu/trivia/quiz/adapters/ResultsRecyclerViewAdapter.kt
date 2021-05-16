@@ -45,7 +45,7 @@ class ResultsRecyclerViewAdapter(var context: Context, var responseList: ArrayLi
         holder.textView.text = request.username
         holder.winner.text = request.username
         holder.points.text = request.score.toString()
-        holder.position.text = position.toString()
+        holder.position.text = (position + 1).toString()
     }
 
     override fun getItemCount(): Int {

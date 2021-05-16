@@ -107,10 +107,6 @@ class MenuActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Void?): String? {
-            if (!TokenController.isTokenSaved(context)){
-                Log.d("Token", TokenController.getToken(context))
-                return TokenController.getToken(context)
-            }
             val token = APIConnector.doPost("token/generate", null).responce.trim()
             TokenController.setToken(token, context)
             Log.d("Token", token)
