@@ -1,6 +1,6 @@
 package ru.nsu.trivia.common.dto.model;
 
-public class PlayerInLobby {
+public class PlayerInLobby implements Comparable {
     String username;
     boolean isHost;
     int score;
@@ -35,5 +35,12 @@ public class PlayerInLobby {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof PlayerInLobby))
+            return 0;
+       return -(score - ((PlayerInLobby) o).score);
     }
 }

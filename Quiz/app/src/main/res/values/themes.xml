@@ -65,4 +65,18 @@
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
+
+    <style name="Result">
+        <item name="android:color">@color/gray_700</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Result.Winner">
+        <item name="android:color">@color/gray_700</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:drawableRight">@drawable/win_right</item>
+        <item name="android:drawableLeft">@drawable/win_left</item>
+    </style>
 </resources>

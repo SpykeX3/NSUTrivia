@@ -12,6 +12,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
+import ru.nsu.trivia.common.dto.model.LobbyState
 import ru.nsu.trivia.common.dto.model.PlayerInLobby
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO
@@ -26,7 +27,6 @@ import kotlin.properties.Delegates
 class ResultsActivity : AppCompatActivity() {
 
     lateinit var adapter: ResultsRecyclerViewAdapter
-    private var mLayoutManager = LinearLayoutManager(this)
     private lateinit var lobby: LobbyDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,46 +37,27 @@ class ResultsActivity : AppCompatActivity() {
             intent.extras?.getString("LobbyDTO")?.let { objectMapper.readValue<LobbyDTO>(it) }!!
         fillRecyclerView()
 
-        WaitForUpdate().execute()
+        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
+        findViewById<TextView>(R.id.round_num_text_view).setText("Round " + (lobby.round - 1))
+        adapter.notifyDataSetChanged()
+
+        if (lobby.state == LobbyState.Closed) {
+            adapter.showWinner()
+            adapter.notifyDataSetChanged()
+            findViewById<TextView>(R.id.round_num_text_view).setText("Game over")
+        }
+        GOTO().execute()
     }
 
     private fun fillRecyclerView() {
         val response = ArrayList<PlayerInLobby>()
-        //response.addAll(lobby.players)
+        response.addAll(lobby.players)
         adapter = ResultsRecyclerViewAdapter(this, response)
         val mLayoutManager = LinearLayoutManager(this)
         (mLayoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
         val mRecyclerView = findViewById<RecyclerView>(R.id.result_view_results)
         mRecyclerView.layoutManager = mLayoutManager
         mRecyclerView.adapter = adapter
-    }
-
-    inner class WaitForUpdate : AsyncTask<Int, Int, Int>() {
-
-        override fun doInBackground(vararg params: Int?): Int {
-            val result = APIConnector.doLongPoling(
-                "lobby/subscribe",
-                TokenController.getToken(this@ResultsActivity),
-                lobby.lastUpdated
-            )
-
-            if (result.code == 200) {
-                val objectMapper = ObjectMapper()
-                lobby = objectMapper.readValue<LobbyDTO>(result.responce)
-                adapter.responseList.addAll(ArrayList(lobby.players))
-            } else {
-                //TODO
-            }
-            return 0
-        }
-
-        override fun onPostExecute(result: Int?) {
-            super.onPostExecute(result)
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
-            findViewById<TextView>(R.id.round_num_text_view).setText("Round " + (lobby.round - 1))
-            adapter.notifyDataSetChanged()
-            GOTO().execute()
-        }
     }
 
     inner class GOTO : AsyncTask<Int, Int, Int>() {
@@ -88,8 +69,10 @@ class ResultsActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: Int?) {
             super.onPostExecute(result)
-            val controller = TaskController(this@ResultsActivity)
-            controller.goToTaskActivity(lobby)
+            if (lobby.state == LobbyState.Playing) {
+                val controller = TaskController(this@ResultsActivity)
+                controller.goToTaskActivity(lobby)
+            }
         }
     }
 }
