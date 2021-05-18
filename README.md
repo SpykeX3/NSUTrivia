@@ -27,3 +27,34 @@ Client-server communication is done using HTTP, objects are serialized as JSON. 
 
 ## Basic application flow
 ![Usage diagram](/usage.png)
+
+## Client-Server API
+*POST /token/generate - generate a new token (~new user)
+
+*POST /user/nickname - set nickname by token
+
+*GET /user/nickname - get nickname by token (own nickname)
+
+*POST /lobby/create - create new lobby by token
+
+*GET /lobby/subscribe - long-polling request by token and lastUpdated time, response is sent when lobby is updated or if lobby has been updated since lastUpdated time
+
+*GET /lobbe/get - get lobby by token, same as /lobby/subscribe with no lastUpdate
+
+*POST /lobby/join - join lobby by token and room code
+
+*POST /lobby/leave - leave lobby by token, if host (one who created lobby) leaves, lobby is closed
+
+*POST /lobby/start - starts a game if requested by host 
+
+*POST /lobby/answer - submits answer
+  
+Tasks, users in lobby and current scores are received by clients as part of lobby state.
+
+## Database
+Using Spring JPA for storing persistent data.
+What is stored:
+* tokens and usernames 
+* tasks
+
+For each task type there is a separate table with task-specific format
