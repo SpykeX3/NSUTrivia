@@ -262,18 +262,24 @@ public class LobbyService {
 
     @Scheduled(fixedDelay = 1500)
     private void proceedTasks() {
+        LOG.info("ProceedTask: " + runningLobbies.size() + " running lobbies");
         Lobby lobby = runningLobbies.poll();
         long time = System.currentTimeMillis();
+        if (lobby != null) {
+            LOG.info("Inspecting for deadlines: " + LobbyConverter.convert(lobby));
+        }
         while (lobby != null && lobby.getTaskDeadline() + 8000 < time) { // TODO process lag (maybe use properties)
             synchronized (lobby) {
-                LOG.info("Inspecting for deadlines: " + LobbyConverter.convert(lobby));
                 if (lobby.getState() != LobbyState.Playing) {
                     continue;
                 }
                 finishRound(lobby);
-                //runningLobbies.add(lobby);
+                runningLobbies.add(lobby);
                 lobby = runningLobbies.poll();
             }
+        }
+        if (lobby != null) {
+            runningLobbies.add(lobby);
         }
     }
 
