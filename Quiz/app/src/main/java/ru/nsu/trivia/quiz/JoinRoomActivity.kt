@@ -6,14 +6,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import com.airbnb.lottie.LottieAnimationView
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
+import ru.nsu.trivia.quiz.clientTasks.ConnectionResult
 import ru.nsu.trivia.quiz.clientTasks.TokenController
 
 class JoinRoomActivity : AppCompatActivity() {
@@ -53,24 +57,32 @@ class JoinRoomActivity : AppCompatActivity() {
         RoomJoiner().execute()
     }
 
-    private inner class RoomJoiner: AsyncTask<Void, Integer, String>() {
+    private inner class RoomJoiner: AsyncTask<Void, Integer, ConnectionResult>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
             findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
         }
 
-        override fun onPostExecute(result: String) {
+        override fun onPostExecute(result: ConnectionResult) {
             super.onPostExecute(result)
-            val intent = Intent(context, LobbyActivity::class.java)
-            intent.putExtra("userName", playerName)
-            intent.putExtra("isHost", false)
-            intent.putExtra("lobbyDTO", result)
             findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
-            startActivity(intent)
+            if (result.code == 200) {
+                val intent = Intent(context, LobbyActivity::class.java)
+                intent.putExtra("userName", playerName)
+                intent.putExtra("isHost", false)
+                intent.putExtra("lobbyDTO", result.responce)
+                startActivity(intent)
+            }
+            else{
+                Log.d("AAAAA", result.code.toString() + result.message)
+                val toast = Toast.makeText(this@JoinRoomActivity, "Something went wrong", Toast.LENGTH_SHORT)
+                toast.setGravity(Gravity.CENTER, 0, 0)
+                toast.show()
+            }
         }
 
-        override fun doInBackground(vararg params: Void?): String {
+        override fun doInBackground(vararg params: Void?): ConnectionResult {
             val userName = ChangeUsernameRequest()
             userName.username = playerName
             userName.token = TokenController.getToken(context)

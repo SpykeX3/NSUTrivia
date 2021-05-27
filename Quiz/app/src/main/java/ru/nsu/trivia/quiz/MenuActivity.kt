@@ -14,6 +14,7 @@ import com.airbnb.lottie.LottieAnimationView
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
+import ru.nsu.trivia.quiz.clientTasks.ConnectionResult
 import ru.nsu.trivia.quiz.clientTasks.TokenController
 
 class MenuActivity : AppCompatActivity() {
@@ -65,24 +66,28 @@ class MenuActivity : AppCompatActivity() {
         RoomCreator().execute()
     }
 
-    private inner class RoomCreator: AsyncTask<Void, Integer, String>() {
+    private inner class RoomCreator: AsyncTask<Void, Integer, ConnectionResult>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
             findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
         }
 
-        override fun onPostExecute(result: String) {
+        override fun onPostExecute(result: ConnectionResult) {
             super.onPostExecute(result)
-            val intent = Intent(context, LobbyActivity::class.java)
-            intent.putExtra("userName", playerName.text.toString())
-            intent.putExtra("isHost", true)
-            intent.putExtra("lobbyDTO", result)
             findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
-            startActivity(intent)
+            if (result.code == 200) {
+                val intent = Intent(context, LobbyActivity::class.java)
+                intent.putExtra("userName", playerName.text.toString())
+                intent.putExtra("isHost", true)
+                intent.putExtra("lobbyDTO", result.responce)
+                startActivity(intent)
+            } else{
+                //TODO
+            }
         }
 
-        override fun doInBackground(vararg params: Void?): String {
+        override fun doInBackground(vararg params: Void?): ConnectionResult {
             val userName = ChangeUsernameRequest()
             userName.username = playerName.text.toString()
             userName.token = TokenController.getToken(context)
@@ -102,11 +107,7 @@ class MenuActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Void?): String? {
-            if (TokenController.isTokenSaved(context)){
-                Log.d("Token", TokenController.getToken(context))
-                return TokenController.getToken(context)
-            }
-            val token = APIConnector.doPost("token/generate", null).trim()
+            val token = APIConnector.doPost("token/generate", null).responce.trim()
             TokenController.setToken(token, context)
             Log.d("Token", token)
             return token

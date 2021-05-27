@@ -263,7 +263,7 @@ public class LobbyService {
     private void proceedTasks() {
         Lobby lobby = runningLobbies.poll();
         long time = System.currentTimeMillis();
-        while (lobby != null && lobby.getTaskDeadline() + 10000 < time) { // TODO process lag (maybe use properties)
+        while (lobby != null && lobby.getTaskDeadline() + 8000 < time) { // TODO process lag (maybe use properties)
             synchronized (lobby) {
                 if (lobby.getState() != LobbyState.Playing) {
                     continue;
