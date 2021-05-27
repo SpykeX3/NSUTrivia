@@ -266,6 +266,7 @@ public class LobbyService {
         long time = System.currentTimeMillis();
         while (lobby != null && lobby.getTaskDeadline() + 8000 < time) { // TODO process lag (maybe use properties)
             synchronized (lobby) {
+                LOG.info("Inspecting for deadlines: " + LobbyConverter.convert(lobby));
                 if (lobby.getState() != LobbyState.Playing) {
                     continue;
                 }
@@ -283,6 +284,7 @@ public class LobbyService {
         }
         lobby.setNewTask(taskService.generateTask(lobby));
         lobby.getPlayers().forEach(p -> p.setAnswered(false));
+        LOG.info("Next round for lobby: " + LobbyConverter.convert(lobby));
         notifySubscribers(lobby);
     }
 
