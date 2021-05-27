@@ -40,7 +40,7 @@ class ResultsActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.round_num_text_view).setText("Round " + (lobby.round - 1))
         adapter.notifyDataSetChanged()
 
-        if (lobby.state == LobbyState.Closed) {
+        if (lobby.state == LobbyState.Finished || lobby.state == LobbyState.Closed) {
             adapter.showWinner()
             adapter.notifyDataSetChanged()
             findViewById<TextView>(R.id.round_num_text_view).setText("Game over")

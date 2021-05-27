@@ -1,37 +1,31 @@
 package ru.nsu.trivia.quiz.gameFragments
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
-import ru.nsu.trivia.common.dto.model.LobbyState
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO
+import ru.nsu.trivia.common.dto.model.task.SetNearestValueAnswer
+import ru.nsu.trivia.common.dto.model.task.SetNearestValueTaskDTO
 import ru.nsu.trivia.quiz.R
-import ru.nsu.trivia.quiz.adapters.SelectAnswerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
-import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
-class SelectAnswerTaskActivity : Activity() {
-
-    lateinit var task: SelectAnswerTaskDTO
-    lateinit var adapter: SelectAnswerViewAdapter
-    private var mLayoutManager = LinearLayoutManager(this)
+class SetNearestAnswerActivity : AppCompatActivity() {
+    lateinit var task: SetNearestValueTaskDTO
     private lateinit var lobby: LobbyDTO
     private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
@@ -39,21 +33,15 @@ class SelectAnswerTaskActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_select_answer_task)
+        setContentView(R.layout.activity_set_nearest_answer)
+
         if (intent != null) {
             val objectMapper = ObjectMapper()
             val extra = intent.getStringExtra("LobbyDTO")
             lobby = extra?.let { objectMapper.readValue<LobbyDTO>(it) }!!
             currRound = lobby.round
+            task = lobby.currentTask as SetNearestValueTaskDTO
         }
-
-        //init question
-        (mLayoutManager).orientation = LinearLayoutManager.VERTICAL
-        val mRecyclerView = findViewById<RecyclerView>(R.id.recycler_view_variants)
-        mRecyclerView?.layoutManager = mLayoutManager
-        task = lobby.currentTask as SelectAnswerTaskDTO
-        adapter = SelectAnswerViewAdapter(this, task)
-        mRecyclerView?.adapter = adapter
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
         val animation = findViewById<LottieAnimationView>(R.id.animationView)
@@ -68,20 +56,16 @@ class SelectAnswerTaskActivity : Activity() {
                 if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    Log.d(
-                        "Tag",
-                        (Math.abs(System.currentTimeMillis() - time).toInt() / 1000).toString()
-                    )
-                    handler.postDelayed(this, 1000)
-
+                    handler.postDelayed(this, 500)
                 } else {
-                    timeOut = true
-                    animation.visibility = View.VISIBLE
-                    animation.focusable = View.FOCUSABLE
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    if (!isAnswered)
+                    animation.visibility = View.VISIBLE
+                    animation.focusable = View.FOCUSABLE
+                    timeOut = true
+                    if (!isAnswered){
                         SendCorrectAns().executeOnExecutor(Executors.newFixedThreadPool(2))
+                    }
                 }
             }
         })
@@ -99,32 +83,44 @@ class SelectAnswerTaskActivity : Activity() {
     }
 
 
-    fun showCorrect(id: Int) {
-        adapter.showCorrect(id, (lobby.currentTask as SelectAnswerTaskDTO).correctVariantId)
-        adapter.notifyDataSetChanged()
-        val exec = Executors.newFixedThreadPool(2)
-        SendCorrectAns().executeOnExecutor(exec, id)
-        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+    fun showCorrect() {
+        findViewById<TextView>(R.id.text_view_question).text =
+            findViewById<TextView>(R.id.text_view_question).text.toString() +
+                    "\n Correct answer: " + task.correctAnswer
     }
 
+    @SuppressLint("StaticFieldLeak")
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {
         override fun onPreExecute() {
             super.onPreExecute()
+            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
             isAnswered = true
+            showCorrect()
         }
 
         override fun doInBackground(vararg params: Int?): Int {
-            val answer = SelectAnswerAnswer()
-             if (!timeOut) {
-                answer.variantId = params[0]!!
-            }else{
-                answer.variantId = Integer.MIN_VALUE
+            val answer = SetNearestValueAnswer()
+            if (!timeOut) {
+                answer.answer =
+                    Integer.parseInt(findViewById<EditText>(R.id.edit_text).text.toString())
+            }
+            else{
+                answer.answer = Integer.MIN_VALUE
             }
             answer.round = currRound
-            answer.token = TokenController.getToken(this@SelectAnswerTaskActivity)
+            answer.token = TokenController.getToken(this@SetNearestAnswerActivity)
+            Thread.sleep(1000)
             APIConnector.doPost("lobby/answer", answer)
             return 0
         }
+    }
+
+    private fun setButtonActive() {
+        findViewById<Button>(R.id.send_answer).setTextColor(getColor(R.color.purple_700))
+    }
+
+    private fun setButtonInactive() {
+        findViewById<Button>(R.id.send_answer).setTextColor(getColor(R.color.purple_200))
     }
 
     private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
@@ -137,7 +133,7 @@ class SelectAnswerTaskActivity : Activity() {
             val result =
                 APIConnector.doLongPoling(
                     "lobby/subscribe",
-                    TokenController.getToken(this@SelectAnswerTaskActivity),
+                    TokenController.getToken(this@SetNearestAnswerActivity),
                     lobby.lastUpdated
                 )
             if (result.code == 200) {
@@ -149,5 +145,10 @@ class SelectAnswerTaskActivity : Activity() {
             }
             return null
         }
+    }
+
+    fun setAnswer(view: View) {
+        val exec = Executors.newFixedThreadPool(2)
+        SendCorrectAns().executeOnExecutor(exec)
     }
 }
