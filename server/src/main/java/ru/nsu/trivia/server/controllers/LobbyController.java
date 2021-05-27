@@ -1,7 +1,11 @@
 package ru.nsu.trivia.server.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
@@ -25,6 +29,7 @@ public class LobbyController {
 
     @GetMapping(value = "/get", produces =
             MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
     LobbyDTO getLobbyState(@RequestParam String token) {
         return lobbyService.getLobbyByToken(token);
     }
@@ -80,5 +85,12 @@ public class LobbyController {
     StatusResponse submitAnswer(@RequestBody Answer answer) {
         lobbyService.submitAnswer(answer);
         return new StatusResponse(0);
+    }
+
+    @ExceptionHandler
+    ResponseEntity<StatusResponse> onError(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new StatusResponse(1, List.of(e.getMessage())));
     }
 }

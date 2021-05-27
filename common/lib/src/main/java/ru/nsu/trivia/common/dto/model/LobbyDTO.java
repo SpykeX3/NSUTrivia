@@ -1,6 +1,7 @@
 package ru.nsu.trivia.common.dto.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ru.nsu.trivia.common.dto.model.task.TaskDTO;
 
@@ -77,5 +78,19 @@ public class LobbyDTO {
 
     public void setTaskDeadline(long taskDeadline) {
         this.taskDeadline = taskDeadline;
+    }
+
+    @Override
+    public String toString() {
+        return "LobbyDTO{" +
+                "players=" + (players == null ? "null" :
+                players.stream().map(PlayerInLobby::toString).collect(Collectors.joining(", "))) +
+                ", round=" + round +
+                ", state=" + state +
+                ", id='" + id + '\'' +
+                ", currentTask=" + currentTask +
+                ", taskDeadline=" + taskDeadline +
+                ", lastUpdated=" + lastUpdated +
+                '}';
     }
 }

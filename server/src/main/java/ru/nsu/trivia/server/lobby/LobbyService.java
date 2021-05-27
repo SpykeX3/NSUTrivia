@@ -26,6 +26,7 @@ import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
 import ru.nsu.trivia.server.sessions.SessionData;
 import ru.nsu.trivia.server.sessions.SessionService;
+import ru.nsu.trivia.server.task.TaskService;
 
 public class LobbyService {
 
@@ -269,6 +270,7 @@ public class LobbyService {
                     continue;
                 }
                 finishRound(lobby);
+                //runningLobbies.add(lobby);
                 lobby = runningLobbies.poll();
             }
         }

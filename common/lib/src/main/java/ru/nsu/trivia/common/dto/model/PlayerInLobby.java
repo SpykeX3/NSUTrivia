@@ -1,6 +1,6 @@
 package ru.nsu.trivia.common.dto.model;
 
-public class PlayerInLobby implements Comparable {
+public class PlayerInLobby implements Comparable<PlayerInLobby> {
     String username;
     boolean isHost;
     int score;
@@ -38,9 +38,16 @@ public class PlayerInLobby implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (!(o instanceof PlayerInLobby))
-            return 0;
-       return -(score - ((PlayerInLobby) o).score);
+    public String toString() {
+        return "PlayerInLobby{" +
+                "username='" + username + '\'' +
+                ", isHost=" + isHost +
+                ", score=" + score +
+                '}';
+    }
+
+    @Override
+    public int compareTo(PlayerInLobby o) {
+        return o.score - score;
     }
 }

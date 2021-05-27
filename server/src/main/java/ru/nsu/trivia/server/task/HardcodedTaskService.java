@@ -1,4 +1,4 @@
-package ru.nsu.trivia.server.lobby;
+package ru.nsu.trivia.server.task;
 
 import java.util.List;
 

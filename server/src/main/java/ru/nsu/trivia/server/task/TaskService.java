@@ -1,4 +1,4 @@
-package ru.nsu.trivia.server.lobby;
+package ru.nsu.trivia.server.task;
 
 import ru.nsu.trivia.common.dto.model.task.Answer;
 import ru.nsu.trivia.common.dto.model.task.TaskDTO;

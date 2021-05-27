@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.nsu.trivia.server.lobby.HardcodedTaskService;
+import ru.nsu.trivia.server.task.DbSelectAnswerTaskProducer;
+import ru.nsu.trivia.server.task.DbTaskService;
+import ru.nsu.trivia.server.task.HardcodedTaskService;
 import ru.nsu.trivia.server.lobby.LobbyService;
-import ru.nsu.trivia.server.lobby.TaskService;
+import ru.nsu.trivia.server.task.SelectAnswerTaskRepository;
+import ru.nsu.trivia.server.task.TaskService;
 import ru.nsu.trivia.server.sessions.SessionService;
 
 @Configuration
@@ -26,7 +28,14 @@ public class LobbyConfig {
     }
 
     @Bean
-    TaskService taskService() {
-        return new HardcodedTaskService();
+    DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer(SelectAnswerTaskRepository selectAnswerTaskRepository){
+        return new DbSelectAnswerTaskProducer(selectAnswerTaskRepository);
     }
+
+    @Bean
+    TaskService taskService(DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer) {
+        return new DbTaskService(dbSelectAnswerTaskProducer);
+    }
+
+
 }
