@@ -8,7 +8,7 @@ public class SetNearestAnswerTaskConverter {
     public static TaskDTO convert(SetNearestAnswerTask task) {
         SetNearestValueTaskDTO dto = new SetNearestValueTaskDTO();
         dto.setQuestion(task.getQuestion());
-        dto.setTimeLimit(task.getTimeLimit());
+        dto.setTimeLimit(task.getTimeLimit() * 1000);
         dto.setCorrectAnswer(task.getCorrect());
         dto.setType(TaskDTO.Type.Type_answer);
         return dto;

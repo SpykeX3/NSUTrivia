@@ -8,7 +8,7 @@ public class SelectAnswerTaskConverter {
     public static TaskDTO convert(SelectAnswerTask selectAnswerTask) {
         SelectAnswerTaskDTO dto = new SelectAnswerTaskDTO();
         dto.setCorrectVariantId(selectAnswerTask.getCorrect());
-        dto.setTimeLimit(selectAnswerTask.getTimeLimit());
+        dto.setTimeLimit(selectAnswerTask.getTimeLimit() * 1000);
         dto.setVariants(selectAnswerTask.getVariants());
         dto.setQuestion(selectAnswerTask.getQuestion());
         dto.setType(TaskDTO.Type.Select_answer);
