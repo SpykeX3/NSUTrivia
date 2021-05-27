@@ -277,7 +277,7 @@ public class LobbyService {
     }
 
     private void finishRound(Lobby lobby) {
-        if (lobby.getRound() > lobby.getGameConfiguration().getTaskTypes().size()) {
+        if (lobby.getRound() >= lobby.getGameConfiguration().getTaskTypes().size()) {
             deleteRoom(lobby.getId(), LobbyState.Finished);
             return;
         }
