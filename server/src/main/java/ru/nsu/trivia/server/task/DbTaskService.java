@@ -16,9 +16,11 @@ public class DbTaskService implements TaskService {
     ScoringCalculator scoringCalculator = new ScoringCalculator();
     Map<TaskDTO.Type, TaskProducer> producers;
 
-    public DbTaskService(DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer) {
+    public DbTaskService(DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer,
+                         DbSetNearestAnswerTaskProducer dbSetNearestAnswerTaskProducer) {
         producers = new HashMap<>();
         producers.put(TaskDTO.Type.Select_answer, dbSelectAnswerTaskProducer);
+        producers.put(TaskDTO.Type.Type_answer, dbSetNearestAnswerTaskProducer);
     }
 
     @Override

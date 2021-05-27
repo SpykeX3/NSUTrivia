@@ -6,10 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.nsu.trivia.server.task.DbSelectAnswerTaskProducer;
+import ru.nsu.trivia.server.task.DbSetNearestAnswerTaskProducer;
 import ru.nsu.trivia.server.task.DbTaskService;
 import ru.nsu.trivia.server.task.HardcodedTaskService;
 import ru.nsu.trivia.server.lobby.LobbyService;
 import ru.nsu.trivia.server.task.SelectAnswerTaskRepository;
+import ru.nsu.trivia.server.task.SetNearestAnswerTaskRepository;
 import ru.nsu.trivia.server.task.TaskService;
 import ru.nsu.trivia.server.sessions.SessionService;
 
@@ -28,13 +30,20 @@ public class LobbyConfig {
     }
 
     @Bean
-    DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer(SelectAnswerTaskRepository selectAnswerTaskRepository){
+    DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer(SelectAnswerTaskRepository selectAnswerTaskRepository) {
         return new DbSelectAnswerTaskProducer(selectAnswerTaskRepository);
     }
 
     @Bean
-    TaskService taskService(DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer) {
-        return new DbTaskService(dbSelectAnswerTaskProducer);
+    DbSetNearestAnswerTaskProducer dbSetNearestAnswerTaskProducer(
+            SetNearestAnswerTaskRepository setNearestAnswerTaskRepository) {
+        return new DbSetNearestAnswerTaskProducer(setNearestAnswerTaskRepository);
+    }
+
+    @Bean
+    TaskService taskService(DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer,
+                            DbSetNearestAnswerTaskProducer dbSetNearestAnswerTaskProducer) {
+        return new DbTaskService(dbSelectAnswerTaskProducer, dbSetNearestAnswerTaskProducer);
     }
 
 

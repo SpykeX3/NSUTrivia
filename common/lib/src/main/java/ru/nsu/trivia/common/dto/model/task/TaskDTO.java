@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "type")
+        property = "task_type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SelectAnswerTaskDTO.class, name = "select"),
         @JsonSubTypes.Type(value = SetNearestValueTaskDTO.class, name = "set")

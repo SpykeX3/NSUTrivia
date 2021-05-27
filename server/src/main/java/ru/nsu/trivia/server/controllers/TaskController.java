@@ -12,17 +12,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.trivia.server.model.SelectAnswerTask;
+import ru.nsu.trivia.server.model.SetNearestAnswerTask;
 import ru.nsu.trivia.server.task.SelectAnswerTaskRepository;
+import ru.nsu.trivia.server.task.SetNearestAnswerTaskRepository;
 
 @RestController
 @RequestMapping(value = "/task")
 public class TaskController {
 
     private final SelectAnswerTaskRepository selectAnswerTaskRepository;
+    private final SetNearestAnswerTaskRepository setNearestAnswerTaskRepository;
 
     @Autowired
-    public TaskController(SelectAnswerTaskRepository selectAnswerTaskRepository) {
+    public TaskController(SelectAnswerTaskRepository selectAnswerTaskRepository,
+                          SetNearestAnswerTaskRepository setNearestAnswerTaskRepository) {
         this.selectAnswerTaskRepository = selectAnswerTaskRepository;
+        this.setNearestAnswerTaskRepository = setNearestAnswerTaskRepository;
     }
 
     @PostMapping(value = "/select/delete")
@@ -39,6 +44,22 @@ public class TaskController {
     @ResponseBody
     public List<SelectAnswerTask> getSelectTasks() {
         return selectAnswerTaskRepository.findAll();
+    }
+
+    @PostMapping(value = "/nearest/delete")
+    public void deleteNearestTask(@RequestParam long id) {
+        setNearestAnswerTaskRepository.deleteById(id);
+    }
+
+    @PostMapping(value = "/nearest/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addNearestTasks(@RequestBody List<SetNearestAnswerTask> tasks) {
+        setNearestAnswerTaskRepository.saveAll(tasks);
+    }
+
+    @GetMapping(value = "/nearest/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<SetNearestAnswerTask> getNearestTasks() {
+        return setNearestAnswerTaskRepository.findAll();
     }
 
 }

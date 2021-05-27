@@ -9,6 +9,7 @@ public class SetNearestAnswerTask {
     private long id;
     private String question;
     private int correct;
+    private int timeLimit;
 
     public SetNearestAnswerTask() {
     }
@@ -41,5 +42,13 @@ public class SetNearestAnswerTask {
 
     public void setCorrect(int correct) {
         this.correct = correct;
+    }
+
+    public int getTimeLimit() {
+        return timeLimit;
+    }
+
+    public void setTimeLimit(int timeLimit) {
+        this.timeLimit = timeLimit;
     }
 }
