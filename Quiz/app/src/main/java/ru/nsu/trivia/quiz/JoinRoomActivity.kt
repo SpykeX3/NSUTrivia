@@ -15,7 +15,6 @@ import android.widget.Toast
 import com.airbnb.lottie.LottieAnimationView
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest
-import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.ConnectionResult
 import ru.nsu.trivia.quiz.clientTasks.TokenController

@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,14 +15,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
 import ru.nsu.trivia.common.dto.model.LobbyState
 import ru.nsu.trivia.common.dto.model.PlayerInLobby
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer
-import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.MenuActivity
 import ru.nsu.trivia.quiz.R
-import ru.nsu.trivia.quiz.adapters.PlayerRecyclerViewAdapter
 import ru.nsu.trivia.quiz.adapters.ResultsRecyclerViewAdapter
-import ru.nsu.trivia.quiz.adapters.SelectAnswerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
 import kotlin.properties.Delegates
