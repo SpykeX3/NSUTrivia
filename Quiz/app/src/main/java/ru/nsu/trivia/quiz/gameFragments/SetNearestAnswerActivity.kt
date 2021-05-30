@@ -21,12 +21,12 @@ import ru.nsu.trivia.common.dto.model.task.SetNearestValueTaskDTO
 import ru.nsu.trivia.quiz.R
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
+import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
-class SetNearestAnswerActivity : AppCompatActivity() {
+class SetNearestAnswerActivity : TaskActivity() {
     lateinit var task: SetNearestValueTaskDTO
-    private lateinit var lobby: LobbyDTO
     private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
     private var timeOut = false
@@ -56,7 +56,9 @@ class SetNearestAnswerActivity : AppCompatActivity() {
                 if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    handler.postDelayed(this, 500)
+                    if (!isAnswered) {
+                        handler.postDelayed(this, 500)
+                    }
                 } else {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
@@ -71,15 +73,6 @@ class SetNearestAnswerActivity : AppCompatActivity() {
         })
 
         RoomSubscriber().execute()
-    }
-
-
-    fun goToLobbyResult() {
-        val intent = Intent(this, ResultsActivity::class.java)
-        val ow = ObjectMapper().writer().withDefaultPrettyPrinter()
-        val json = ow.writeValueAsString(lobby)
-        intent.putExtra("LobbyDTO", json)
-        startActivity(intent)
     }
 
 
@@ -116,39 +109,20 @@ class SetNearestAnswerActivity : AppCompatActivity() {
     }
 
     private fun setButtonActive() {
-        findViewById<Button>(R.id.send_answer).setTextColor(getColor(R.color.purple_700))
+        findViewById<Button>(R.id.send_answer).setTextColor(getColor(R.color.green_700))
     }
 
     private fun setButtonInactive() {
-        findViewById<Button>(R.id.send_answer).setTextColor(getColor(R.color.purple_200))
+        findViewById<Button>(R.id.send_answer).setTextColor(getColor(R.color.green_200))
     }
 
-    private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
-
-        override fun onPostExecute(result: LobbyDTO?) {
-            goToLobbyResult()
-        }
-
-        override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            val result =
-                APIConnector.doLongPoling(
-                    "lobby/subscribe",
-                    TokenController.getToken(this@SetNearestAnswerActivity),
-                    lobby.lastUpdated
-                )
-            if (result.code == 200) {
-                val objectMapper = ObjectMapper()
-                lobby = objectMapper.readValue<LobbyDTO>(result.responce)
-                return lobby
-            } else {
-                //TODO
-            }
-            return null
-        }
-    }
 
     fun setAnswer(view: View) {
         val exec = Executors.newFixedThreadPool(2)
         SendCorrectAns().executeOnExecutor(exec)
+    }
+
+    override fun onBackPressed() {
+        AlertDialogCreator().createAlertDialog(this).show()
     }
 }

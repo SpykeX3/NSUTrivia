@@ -37,7 +37,7 @@
         android:elevation="20dp"
         android:focusable="false"
         android:text="@string/join_room"
-        android:textColor="@color/purple_200"
+        android:textColor="@color/green_200"
         android:translationZ="20dp"
         android:layout_marginTop="40dp"
         app:layout_constraintCircleRadius="20dp"
@@ -47,14 +47,12 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
         android:layout_gravity="center"
-        android:background="@color/gray_0500"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/edit_text_room_code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/loading" />

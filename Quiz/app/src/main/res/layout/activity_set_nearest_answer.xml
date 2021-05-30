@@ -13,7 +13,7 @@
         android:layout_height="100dp"
         android:layout_margin="20dp"
         android:gravity="center"
-        android:textColor="@color/white"
+        android:textColor="@color/gray_200"
         android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/edit_text"
@@ -44,6 +44,7 @@
         android:layout_gravity="center"
         android:layout_margin="30dp"
         android:autofillHints="Answer"
+        android:hint="@string/enter_number"
         android:ems="10"
         android:gravity="center"
         android:inputType="number"
@@ -79,14 +80,16 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:layout_margin="20dp"
         android:layout_gravity="center"
-        android:background="@color/gray_0500"
         app:layout_constraintStart_toStartOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/loading" />
+        app:lottie_rawRes="@raw/waiting_other_players"
+        app:layout_constraintBottom_toTopOf="@id/progressBar"
+        app:layout_constraintEnd_toStartOf="@id/send_answer"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

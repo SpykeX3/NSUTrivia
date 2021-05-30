@@ -2,7 +2,6 @@ package ru.nsu.trivia.quiz.gameFragments
 
 import android.content.Intent
 import android.os.AsyncTask
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -21,12 +20,13 @@ import ru.nsu.trivia.quiz.R
 import ru.nsu.trivia.quiz.adapters.ResultsRecyclerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
-import kotlin.properties.Delegates
+import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
+import ru.nsu.trivia.quiz.tasks.GoToNextTask
 
-class ResultsActivity : AppCompatActivity() {
+
+class ResultsActivity : TaskActivity()  {
 
     lateinit var adapter: ResultsRecyclerViewAdapter
-    private lateinit var lobby: LobbyDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class ResultsActivity : AppCompatActivity() {
             findViewById<Button>(R.id.leave_game).visibility = View.VISIBLE
         }
 
-        GOTO().execute()
+        GoToNextTask(lobby, this).execute()
     }
 
     fun leaveGame(view: View){
@@ -77,19 +77,7 @@ class ResultsActivity : AppCompatActivity() {
         mRecyclerView.adapter = adapter
     }
 
-    inner class GOTO : AsyncTask<Int, Int, Int>() {
-
-        override fun doInBackground(vararg params: Int?): Int {
-            Thread.sleep(5000)
-            return 0
-        }
-
-        override fun onPostExecute(result: Int?) {
-            super.onPostExecute(result)
-            if (lobby.state == LobbyState.Playing) {
-                val controller = TaskController(this@ResultsActivity)
-                controller.goToTaskActivity(lobby)
-            }
-        }
+    override fun onBackPressed() {
+        AlertDialogCreator().createAlertDialog(this).show()
     }
 }

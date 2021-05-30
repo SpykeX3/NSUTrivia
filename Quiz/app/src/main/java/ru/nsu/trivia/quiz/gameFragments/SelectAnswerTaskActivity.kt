@@ -16,23 +16,21 @@ import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
-import ru.nsu.trivia.common.dto.model.LobbyState
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerAnswer
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO
 import ru.nsu.trivia.quiz.R
 import ru.nsu.trivia.quiz.adapters.SelectAnswerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
-import java.util.concurrent.Executor
+import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
-class SelectAnswerTaskActivity : Activity() {
+class SelectAnswerTaskActivity : TaskActivity() {
 
     lateinit var task: SelectAnswerTaskDTO
     lateinit var adapter: SelectAnswerViewAdapter
     private var mLayoutManager = LinearLayoutManager(this)
-    private lateinit var lobby: LobbyDTO
     private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
     private var timeOut = false
@@ -68,12 +66,13 @@ class SelectAnswerTaskActivity : Activity() {
                 if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    Log.d(
-                        "Tag",
-                        (Math.abs(System.currentTimeMillis() - time).toInt() / 1000).toString()
-                    )
-                    handler.postDelayed(this, 1000)
-
+                    if (!isAnswered) {
+                        Log.d(
+                            "Tag",
+                            (Math.abs(System.currentTimeMillis() - time).toInt() / 1000).toString()
+                        )
+                        handler.postDelayed(this, 1000)
+                    }
                 } else {
                     timeOut = true
                     animation.visibility = View.VISIBLE
@@ -87,15 +86,6 @@ class SelectAnswerTaskActivity : Activity() {
         })
 
         RoomSubscriber().execute()
-    }
-
-
-    fun goToLobbyResult() {
-        val intent = Intent(this, ResultsActivity::class.java)
-        val ow = ObjectMapper().writer().withDefaultPrettyPrinter()
-        val json = ow.writeValueAsString(lobby)
-        intent.putExtra("LobbyDTO", json)
-        startActivity(intent)
     }
 
 
@@ -127,27 +117,7 @@ class SelectAnswerTaskActivity : Activity() {
         }
     }
 
-    private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
-
-        override fun onPostExecute(result: LobbyDTO?) {
-            goToLobbyResult()
-        }
-
-        override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            val result =
-                APIConnector.doLongPoling(
-                    "lobby/subscribe",
-                    TokenController.getToken(this@SelectAnswerTaskActivity),
-                    lobby.lastUpdated
-                )
-            if (result.code == 200) {
-                val objectMapper = ObjectMapper()
-                lobby = objectMapper.readValue<LobbyDTO>(result.responce)
-                return lobby
-            } else {
-                //TODO
-            }
-            return null
-        }
+    override fun onBackPressed() {
+        AlertDialogCreator().createAlertDialog(this).show()
     }
 }

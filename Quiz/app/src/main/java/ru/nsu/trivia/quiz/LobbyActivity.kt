@@ -113,21 +113,4 @@ class LobbyActivity : AppCompatActivity() {
             return null
         }
     }
-
-    private inner class LeaveRoom : AsyncTask<Void, Int, LobbyDTO?>() {
-
-        override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            val request = UsingTokenRequest()
-            request.token = TokenController.getToken(context)
-            APIConnector.doPost("lobby/leave", request)
-            return null
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (lobbyDTO.state == LobbyState.Waiting) {
-            LeaveRoom().execute()
-        }
-    }
 }

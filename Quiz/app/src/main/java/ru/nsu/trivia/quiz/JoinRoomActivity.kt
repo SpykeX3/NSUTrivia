@@ -30,10 +30,10 @@ class JoinRoomActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 if (s != null && s.length == 6) {
                     findViewById<Button>(R.id.join_room).isFocusable = true
-                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.purple_700))
+                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_700))
                 } else {
                     findViewById<Button>(R.id.join_room).isFocusable = false
-                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.purple_200))
+                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_200))
                 }
             }
 

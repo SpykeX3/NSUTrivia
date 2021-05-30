@@ -31,4 +31,5 @@
     <string name="waiting_for_other_players">Waiting for other players…</string>
     <string name="title_activity_set_nearest_answer">SetNearestAnswerActivity</string>
     <string name="send_answer">Send answer</string>
+    <string name="enter_number">Enter number</string>
 </resources>

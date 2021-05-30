@@ -1,5 +1,7 @@
 package ru.nsu.trivia.quiz
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -7,9 +9,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
@@ -43,13 +45,13 @@ class MenuActivity : AppCompatActivity() {
                 if (s != null && s.isNotEmpty()) {
                     findViewById<Button>(R.id.join_room).isFocusable = true
                     findViewById<Button>(R.id.room_creation).isFocusable = true
-                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.purple_700))
-                    findViewById<Button>(R.id.room_creation).setTextColor(resources.getColor(R.color.purple_700))
+                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_700))
+                    findViewById<Button>(R.id.room_creation).setTextColor(resources.getColor(R.color.green_700))
                 } else {
                     findViewById<Button>(R.id.join_room).isFocusable = false
                     findViewById<Button>(R.id.room_creation).isFocusable = false
-                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.purple_200))
-                    findViewById<Button>(R.id.room_creation).setTextColor(resources.getColor(R.color.purple_200))
+                    findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_200))
+                    findViewById<Button>(R.id.room_creation).setTextColor(resources.getColor(R.color.green_200))
                 }
             }
 
