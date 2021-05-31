@@ -1,9 +1,9 @@
 package ru.nsu.trivia.server.controllers;
 
-import java.util.List;
+
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +15,13 @@ import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest;
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest;
 import ru.nsu.trivia.common.dto.responses.StatusResponse;
 import ru.nsu.trivia.server.lobby.LobbyService;
+import ru.nsu.trivia.server.util.ErrorHandler;
 
 @RestController
 @RequestMapping("/lobby")
 public class LobbyController {
+
+    private static final Logger log = Logger.getLogger(LobbyService.class.getName());
 
     LobbyService lobbyService;
 
@@ -89,8 +92,7 @@ public class LobbyController {
 
     @ExceptionHandler
     ResponseEntity<StatusResponse> onError(Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new StatusResponse(1, List.of(e.getMessage())));
+        log.warning(e.getMessage());
+        return ErrorHandler.processError(e);
     }
 }

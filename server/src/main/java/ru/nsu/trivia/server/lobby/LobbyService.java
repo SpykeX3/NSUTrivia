@@ -24,6 +24,11 @@ import ru.nsu.trivia.server.model.GameConfiguration;
 import ru.nsu.trivia.server.model.Lobby;
 import ru.nsu.trivia.server.model.Player;
 import ru.nsu.trivia.server.model.converters.LobbyConverter;
+import ru.nsu.trivia.server.model.error.ActionDeniedException;
+import ru.nsu.trivia.server.model.error.GameAlreadyStartedException;
+import ru.nsu.trivia.server.model.error.InvalidRoomCodeException;
+import ru.nsu.trivia.server.model.error.PlayerNotInLobbyException;
+import ru.nsu.trivia.server.model.error.WrongRoundException;
 import ru.nsu.trivia.server.sessions.SessionData;
 import ru.nsu.trivia.server.sessions.SessionService;
 import ru.nsu.trivia.server.task.TaskService;
@@ -71,7 +76,7 @@ public class LobbyService {
     public LobbyDTO getLobbyById(String roomID) {
         var lobby = roomIDToLobby.get(roomID);
         if (lobby == null) {
-            throw new RuntimeException("No such lobby: " + roomID);
+            throw new InvalidRoomCodeException("No such lobby: " + roomID);
         }
         return LobbyConverter.convert(lobby);
     }
@@ -79,7 +84,7 @@ public class LobbyService {
     public LobbyDTO getLobbyByToken(String token) {
         var lobby = playerToLobby.get(token);
         if (lobby == null) {
-            throw new RuntimeException("Player not in any lobby");
+            throw new PlayerNotInLobbyException("Player not in any lobby");
         }
         return LobbyConverter.convert(lobby);
     }
@@ -87,7 +92,7 @@ public class LobbyService {
     public void addSubscription(String token, long lastUpdate, DeferredResult<LobbyDTO> result) {
         var lobby = playerToLobby.get(token);
         if (lobby == null) {
-            throw new RuntimeException("Player not in any lobby");
+            throw new PlayerNotInLobbyException("Player not in any lobby");
         }
         addSubscription(lobby, lastUpdate, result);
     }
@@ -122,17 +127,17 @@ public class LobbyService {
     public void startLobby(String token) {
         Lobby lobby = playerToLobby.get(token);
         if (lobby == null) {
-            throw new RuntimeException("Can't start game: player is not in any lobby");
+            throw new PlayerNotInLobbyException("Can't start game: player is not in any lobby");
         }
         Player player = lobby.getPlayers().stream()
                 .filter(p -> p.getToken().equals(token))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Internal error: player not found in associated lobby"));
         if (!player.isHost()) {
-            throw new RuntimeException("Player is not a host");
+            throw new ActionDeniedException("Player is not a host");
         }
         if (lobby.getState() != LobbyState.Waiting) {
-            throw new RuntimeException("Lobby has already started");
+            throw new GameAlreadyStartedException("Lobby has already started");
         }
         synchronized (lobby) {
             lobby.setState(LobbyState.Playing);
@@ -145,7 +150,7 @@ public class LobbyService {
     public void leaveLobby(String token) {
         var lobby = playerToLobby.get(token);
         if (lobby == null) {
-            throw new RuntimeException("Player not in any lobby");
+            throw new PlayerNotInLobbyException("Player not in any lobby");
         }
         synchronized (lobby) {
             boolean isHost =
@@ -166,7 +171,7 @@ public class LobbyService {
     public void connectToLobby(String token, String roomID) {
         var lobby = roomIDToLobby.get(roomID);
         if (lobby == null) {
-            throw new RuntimeException("No such lobby: " + roomID);
+            throw new InvalidRoomCodeException("No such lobby: " + roomID);
         }
         connectToLobby(token, lobby);
     }
@@ -175,21 +180,23 @@ public class LobbyService {
         String token = answer.getToken();
         Lobby lobby = playerToLobby.get(token);
         if (lobby == null) {
-            throw new RuntimeException("Player not in any lobby");
+            throw new PlayerNotInLobbyException("Player not in any lobby");
         }
         if (lobby.getState() != LobbyState.Playing) {
-            throw new RuntimeException("Invalid lobby state: " + lobby.getState().toString());
+            throw new ActionDeniedException("Invalid lobby state: " + lobby.getState().toString());
         }
         if (lobby.getRound() != answer.getRound()) {
-            throw new RuntimeException("Invalid round " + answer.getRound() + ", current round is " + lobby.getRound());
+            throw new WrongRoundException("Invalid round " + answer.getRound() + ", current round is " +
+                    lobby.getRound());
         }
         synchronized (lobby) {
             Player player =
                     lobby.getPlayers().stream()
                             .filter(p -> p.getToken().equals(token))
-                            .findFirst().orElseThrow(() -> new RuntimeException("Player is not in lobby " + lobby.getId()));
+                            .findFirst().orElseThrow(() -> new RuntimeException("Player is not in lobby " +
+                            lobby.getId()));
             if (player.isAnswered()) {
-                throw new RuntimeException("Player already submitted answer for round " + lobby.getRound());
+                throw new ActionDeniedException("Player already submitted answer for round " + lobby.getRound());
             }
             int scoreGain = taskService.getScore(lobby.getCurrentTask(), answer);
             player.setScore(player.getScore() + scoreGain);
@@ -202,7 +209,7 @@ public class LobbyService {
 
     public void connectToLobby(String token, Lobby lobby) {
         if (lobby.getState() != LobbyState.Waiting) {
-            throw new RuntimeException("Game is already running");
+            throw new GameAlreadyStartedException("Game is already running");
         }
         synchronized (lobby) {
             Player player = playerByToken(token);
