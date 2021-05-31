@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatusResponse {
     public int code;
-    public List<String> errors;
+    public String error;
 
     public StatusResponse() {
     }
@@ -16,13 +16,13 @@ public class StatusResponse {
         this.code = code;
     }
 
-    public StatusResponse(int code, List<String> errors) {
+    public StatusResponse(int code, String errors) {
         this.code = code;
-        this.errors = errors;
+        this.error = errors;
     }
 
-    public void setErrors(List<String> errors) {
-        this.errors = errors;
+    public void setErrors(String errors) {
+        this.error = errors;
     }
 
     public int getCode() {
@@ -33,7 +33,7 @@ public class StatusResponse {
         this.code = code;
     }
 
-    public List<String> getErrors() {
-        return errors;
+    public String getErrors() {
+        return error;
     }
 }
