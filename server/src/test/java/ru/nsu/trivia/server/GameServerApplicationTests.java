@@ -182,8 +182,8 @@ class GameServerApplicationTests {
         Thread.sleep(2000);
         StatusResponse resp = restTemplate.postForObject(getUrl("lobby/start"), new UsingTokenRequest(tokenUser1),
                 StatusResponse.class);
-        assertEquals(0, resp.code);
-        assertNull(resp.error);
+        assertEquals(0, resp.getCode());
+        assertNull(resp.getError());
         lobby = lobbyFuture.get();
         assertEquals(LobbyState.Playing, lobby.getState());
         assertNotNull(lobby.getCurrentTask());
@@ -195,8 +195,8 @@ class GameServerApplicationTests {
         createLobby();
         StatusResponse resp = restTemplate.postForObject(getUrl("lobby/start"), new UsingTokenRequest(tokenUser1),
                 StatusResponse.class);
-        assertEquals(0, resp.code);
-        assertNull(resp.error);
+        assertEquals(0, resp.getCode());
+        assertNull(resp.getError());
         LobbyDTO lobby = restTemplate.getForObject(getUrl("lobby/get?token=" + tokenUser1), LobbyDTO.class);
         assertEquals(LobbyState.Playing, lobby.getState());
         assertNotNull(lobby.getCurrentTask());
@@ -211,12 +211,12 @@ class GameServerApplicationTests {
         }).start();
         StatusResponse submit1 = restTemplate.postForObject(getUrl("lobby/answer"),
                 new SelectAnswerAnswer(tokenUser1, 1, 1), StatusResponse.class);
-        assertEquals(0, submit1.code);
-        assertNull(submit1.error);
+        assertEquals(0, submit1.getCode());
+        assertNull(submit1.getError());
         StatusResponse submit2 = restTemplate.postForObject(getUrl("lobby/answer"),
                 new SelectAnswerAnswer(tokenUser2, 0, 1), StatusResponse.class);
-        assertEquals(0, submit2.code);
-        assertNull(submit2.error);
+        assertEquals(0, submit2.getCode());
+        assertNull(submit2.getError());
 
         lobby = lobbyFuture.get();
         assertEquals(2, lobby.getRound());
