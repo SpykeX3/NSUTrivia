@@ -9,7 +9,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.lottie.LottieAnimationView
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
@@ -67,24 +69,27 @@ class MenuActivity : AppCompatActivity() {
         }
     }
 
-    private inner class RoomCreator: AsyncTask<Void, Integer, ConnectionResult>() {
+    fun reconnect(view: View) {
+        TokenGenerator().execute()
+    }
+
+    private inner class RoomCreator : AsyncTask<Void, Integer, ConnectionResult>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+            showLoading()
         }
 
         override fun onPostExecute(result: ConnectionResult) {
             super.onPostExecute(result)
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
             if (result.code == 200) {
                 val intent = Intent(context, LobbyActivity::class.java)
                 intent.putExtra("userName", playerName.text.toString())
                 intent.putExtra("isHost", true)
                 intent.putExtra("lobbyDTO", result.responce)
                 startActivity(intent)
-            } else{
-                //TODO
+            } else {
+                showError()
             }
         }
 
@@ -100,18 +105,61 @@ class MenuActivity : AppCompatActivity() {
         }
     }
 
-    private inner class TokenGenerator : AsyncTask<Void, Integer, String>() {
+    private fun showButtons(value: Int) {
+        findViewById<Button>(R.id.join_room).visibility = value
+        findViewById<Button>(R.id.room_creation).visibility = value
+    }
 
-        override fun onPostExecute(result: String?) {
-            super.onPostExecute(result)
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
+    private fun hideAnimation() {
+        showButtons(View.VISIBLE)
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
+    }
+
+    private fun showError() {
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.error)
+        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        showButtons(View.INVISIBLE)
+        findViewById<Button>(R.id.try_again).visibility = View.VISIBLE
+        findViewById<TextView>(R.id.errorMessage).visibility = View.VISIBLE
+    }
+
+    private fun showLoading() {
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.loading)
+        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        showButtons(View.INVISIBLE)
+        findViewById<Button>(R.id.try_again).visibility = View.INVISIBLE
+        findViewById<TextView>(R.id.errorMessage).visibility = View.INVISIBLE
+    }
+
+    private inner class TokenGenerator : AsyncTask<Void, Integer, Boolean>() {
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            showLoading()
         }
 
-        override fun doInBackground(vararg params: Void?): String? {
-            val token = APIConnector.doPost("token/generate", null).responce.trim()
-            TokenController.setToken(token, context)
-            Log.d("Token", token)
-            return token
+        override fun onPostExecute(result: Boolean) {
+            super.onPostExecute(result)
+            if (result) {
+                hideAnimation()
+            } else {
+                showError()
+            }
+        }
+
+        override fun doInBackground(vararg params: Void?): Boolean {
+            try {
+                val response = APIConnector.doPost("token/generate", null)
+                val token = response.responce.trim()
+                TokenController.setToken(token, context)
+                Log.d("Token", token)
+                return true
+            } catch (ignored: Exception) {
+                return false
+            }
         }
     }
+
 }

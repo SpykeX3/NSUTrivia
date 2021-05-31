@@ -33,21 +33,16 @@ public class APIConnector {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
 
-        int status = con.getResponseCode();
         StringBuilder sb = new StringBuilder();
-        if (status == HttpURLConnection.HTTP_OK) {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(con.getInputStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();
-            Log.d(TAG, "Get: " + sb.toString());
-            return sb.toString();
-        } else {
-            return "";
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), "utf-8"));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
         }
+        br.close();
+        Log.d(TAG, "Get: " + sb.toString());
+        return sb.toString();
     }
 
     public static ConnectionResult doPost(String url, Object requestBody) throws IOException {
@@ -74,30 +69,15 @@ public class APIConnector {
         int status = con.getResponseCode();
         StringBuilder sb = new StringBuilder();
 
-        if (status == HttpURLConnection.HTTP_OK) {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(con.getInputStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();
-            Log.d(TAG, "Get: " + sb.toString());
-            ConnectionResult result = new ConnectionResult(status, null, sb.toString());
-            return result;
-        } else {
-            //TODO: fix on Vasily make it work on  server
-            /*BufferedReader br = new BufferedReader(
-                    new InputStreamReader(con.getErrorStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();*/
-            Log.d(TAG, "Get: " + sb.toString());
-
-            ConnectionResult result = new ConnectionResult(status, con.getResponseMessage(), sb.toString());
-            return result;
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), "utf-8"));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
         }
+        br.close();
+        Log.d(TAG, "Get: " + sb.toString());
+        ConnectionResult result = new ConnectionResult(status, null, sb.toString());
+        return result;
     }
 }

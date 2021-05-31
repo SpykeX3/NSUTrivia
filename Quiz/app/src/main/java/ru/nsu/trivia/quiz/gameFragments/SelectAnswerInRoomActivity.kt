@@ -1,7 +1,5 @@
 package ru.nsu.trivia.quiz.gameFragments
 
-import android.app.Activity
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -45,7 +44,6 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
             currRound = lobby.round
         }
 
-        //init question
         (mLayoutManager).orientation = LinearLayoutManager.VERTICAL
         val mRecyclerView = findViewById<RecyclerView>(R.id.recycler_view_variants)
         mRecyclerView?.layoutManager = mLayoutManager
@@ -54,7 +52,8 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
         mRecyclerView?.adapter = adapter
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
-        val animation = findViewById<LottieAnimationView>(R.id.animationView)
+        val animation = findViewById<LottieAnimationView>(R.id.animationWaitingView)
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
         animation.visibility = View.INVISIBLE
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -84,17 +83,15 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
                 }
             }
         })
-
         RoomSubscriber().execute()
     }
-
 
     fun showCorrect(id: Int) {
         adapter.showCorrect(id, (lobby.currentTask as SelectAnswerTaskDTO).correctVariantId)
         adapter.notifyDataSetChanged()
         val exec = Executors.newFixedThreadPool(2)
         SendCorrectAns().executeOnExecutor(exec, id)
-        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.animationWaitingView).visibility = View.VISIBLE
     }
 
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {

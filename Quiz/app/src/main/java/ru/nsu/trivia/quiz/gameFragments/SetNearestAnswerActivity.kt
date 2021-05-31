@@ -1,7 +1,6 @@
 package ru.nsu.trivia.quiz.gameFragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
@@ -13,7 +12,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -46,7 +45,8 @@ class SetNearestAnswerActivity : InRoomActivity() {
         }
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
-        val animation = findViewById<LottieAnimationView>(R.id.animationView)
+        val animation = findViewById<LottieAnimationView>(R.id.animationWaitingView)
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
         animation.visibility = View.INVISIBLE
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -103,7 +103,7 @@ class SetNearestAnswerActivity : InRoomActivity() {
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {
         override fun onPreExecute() {
             super.onPreExecute()
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+            findViewById<LottieAnimationView>(R.id.animationWaitingView).visibility = View.VISIBLE
             isAnswered = true
             showCorrect()
         }

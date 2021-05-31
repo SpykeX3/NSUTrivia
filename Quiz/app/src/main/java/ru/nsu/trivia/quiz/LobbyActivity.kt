@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -43,6 +44,7 @@ class LobbyActivity : InRoomActivity(){
         }
 
         findViewById<TextView>(R.id.room_code_text_view).text = lobby.id
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
 
         findViewById<Button>(R.id.button_start_game).setOnClickListener { view ->
             StartGameTask().executeOnExecutor(exec)

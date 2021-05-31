@@ -54,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
+        android:id="@+id/animationWaitingView"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
         android:layout_margin="20dp"
@@ -64,5 +64,10 @@
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/waiting_other_players" />
 
+    <include
+        layout="@layout/error_include"
+        android:id="@+id/animationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,9 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.lottie.LottieAnimationView
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest
@@ -26,7 +28,8 @@ class JoinRoomActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_join_room)
-        findViewById<EditText>(R.id.edit_text_room_code).addTextChangedListener(object : TextWatcher {
+        findViewById<EditText>(R.id.edit_text_room_code).addTextChangedListener(object :
+            TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (s != null && s.length == 6) {
                     findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_700))
@@ -45,52 +48,88 @@ class JoinRoomActivity : AppCompatActivity() {
         playerName = intent.extras?.getString("userName").toString()
 
         findViewById<Button>(R.id.join_room).setOnClickListener { view ->
-           joinRoom(findViewById<EditText>(R.id.edit_text_room_code).text.toString())
+            joinRoom(findViewById<EditText>(R.id.edit_text_room_code).text.toString())
         }
-        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
     }
 
-    private fun joinRoom(roomCode: String){
+    private fun joinRoom(roomCode: String) {
         if (roomCode.length == 6) {
             RoomJoiner().execute()
         }
     }
 
-    private inner class RoomJoiner: AsyncTask<Void, Integer, ConnectionResult>() {
+    private fun showButtons(value: Int) {
+        findViewById<Button>(R.id.join_room).visibility = value
+    }
+
+    private fun hideAnimation() {
+        showButtons(View.VISIBLE)
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
+    }
+
+    private fun showError() {
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.error)
+        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        showButtons(View.INVISIBLE)
+        findViewById<Button>(R.id.try_again).visibility = View.VISIBLE
+        findViewById<TextView>(R.id.errorMessage).visibility = View.VISIBLE
+    }
+
+    private fun showLoading() {
+        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.loading)
+        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        showButtons(View.INVISIBLE)
+        findViewById<Button>(R.id.try_again).visibility = View.INVISIBLE
+        findViewById<TextView>(R.id.errorMessage).visibility = View.INVISIBLE
+    }
+
+    private inner class RoomJoiner : AsyncTask<Void, Integer, ConnectionResult?>() {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+            showLoading()
         }
 
-        override fun onPostExecute(result: ConnectionResult) {
+        override fun onPostExecute(result: ConnectionResult?) {
             super.onPostExecute(result)
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
-            if (result.code == 200) {
-                val intent = Intent(context, LobbyActivity::class.java)
-                intent.putExtra("userName", playerName)
-                intent.putExtra("isHost", false)
-                intent.putExtra("lobbyDTO", result.responce)
-                startActivity(intent)
-            }
-            else{
-                Log.d("AAAAA", result.code.toString() + result.message)
-                val toast = Toast.makeText(this@JoinRoomActivity, "Something went wrong", Toast.LENGTH_SHORT)
-                toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
+            if (result != null) {
+                if (result.code == 200) {
+                    val intent = Intent(context, LobbyActivity::class.java)
+                    intent.putExtra("userName", playerName)
+                    intent.putExtra("isHost", false)
+                    intent.putExtra("lobbyDTO", result.responce)
+                    startActivity(intent)
+                } else {
+                    val toast = Toast.makeText(
+                        this@JoinRoomActivity,
+                        "Room doesn't exist",
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.setGravity(Gravity.TOP, 0, 20)
+                    toast.show()
+                }
+            } else {
+                showError()
             }
         }
 
-        override fun doInBackground(vararg params: Void?): ConnectionResult {
+        override fun doInBackground(vararg params: Void?): ConnectionResult? {
             val userName = ChangeUsernameRequest()
-            userName.username = playerName
-            userName.token = TokenController.getToken(context)
-            APIConnector.doPost("user/nickname", userName)
+            try {
+                userName.username = playerName
+                userName.token = TokenController.getToken(context)
+                APIConnector.doPost("user/nickname", userName)
 
-            val request = JoinLobbyRequest()
-            request.token = TokenController.getToken(context)
-            request.roomID = findViewById<EditText>(R.id.edit_text_room_code).text.toString()
-            return APIConnector.doPost("lobby/join", request)
+                val request = JoinLobbyRequest()
+                request.token = TokenController.getToken(context)
+                request.roomID = findViewById<EditText>(R.id.edit_text_room_code).text.toString()
+                return APIConnector.doPost("lobby/join", request)
+            } catch (e: Exception) {
+                return null
+            }
         }
     }
 }

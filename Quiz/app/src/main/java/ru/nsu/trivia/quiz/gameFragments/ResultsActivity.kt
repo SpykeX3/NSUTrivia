@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
@@ -36,7 +35,6 @@ class ResultsActivity : InRoomActivity()  {
             intent.extras?.getString("LobbyDTO")?.let { objectMapper.readValue<LobbyDTO>(it) }!!
         fillRecyclerView()
 
-        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.INVISIBLE
         findViewById<TextView>(R.id.round_num_text_view).setText("Round " + (lobby.round - 1))
         adapter.notifyDataSetChanged()
 

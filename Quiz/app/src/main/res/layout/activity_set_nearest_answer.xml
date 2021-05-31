@@ -79,7 +79,7 @@
         android:onClick="setAnswer"/>
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
+        android:id="@+id/animationWaitingView"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
         android:layout_margin="20dp"
@@ -91,5 +91,10 @@
         app:layout_constraintBottom_toTopOf="@id/progressBar"
         app:layout_constraintEnd_toStartOf="@id/send_answer"/>
 
+    <include
+        layout="@layout/error_include"
+        android:id="@+id/animationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
