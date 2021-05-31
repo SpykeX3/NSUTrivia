@@ -14,7 +14,7 @@ class TaskController(val context: Context) {
         val json = ow.writeValueAsString(task)
 
         if (task.currentTask is SelectAnswerTaskDTO) {
-            val intent = Intent(context, SelectAnswerTaskActivity::class.java)
+            val intent = Intent(context, SelectAnswerInRoomActivity::class.java)
             intent.putExtra("LobbyDTO", json)
             context.startActivity(intent)
         }

@@ -24,7 +24,7 @@ import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import ru.nsu.trivia.quiz.tasks.GoToNextTask
 
 
-class ResultsActivity : TaskActivity()  {
+class ResultsActivity : InRoomActivity()  {
 
     lateinit var adapter: ResultsRecyclerViewAdapter
 

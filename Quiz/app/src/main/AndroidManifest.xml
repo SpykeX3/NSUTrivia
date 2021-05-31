@@ -27,7 +27,7 @@
             android:name=".gameFragments.ResultsActivity"
             android:theme="@style/Theme.Quiz.NoActionBar" />
         <activity
-            android:name=".gameFragments.SelectAnswerTaskActivity"
+            android:name=".gameFragments.SelectAnswerInRoomActivity"
             android:theme="@style/Theme.Quiz.NoActionBar" />
 
         <uses-library

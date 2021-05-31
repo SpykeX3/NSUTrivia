@@ -1,7 +1,5 @@
 package ru.nsu.trivia.quiz
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -19,6 +17,7 @@ import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.ConnectionResult
 import ru.nsu.trivia.quiz.clientTasks.TokenController
 
+
 class MenuActivity : AppCompatActivity() {
 
     lateinit var playerName: EditText
@@ -31,9 +30,11 @@ class MenuActivity : AppCompatActivity() {
         TokenGenerator().execute()
 
         findViewById<Button>(R.id.join_room).setOnClickListener { view ->
-            val intent = Intent(this, JoinRoomActivity::class.java)
-            intent.putExtra("userName", playerName.text.toString())
-            startActivity(intent)
+            if (playerName.text.isNotEmpty()) {
+                val intent = Intent(this, JoinRoomActivity::class.java)
+                intent.putExtra("userName", playerName.text.toString())
+                startActivity(intent)
+            }
         }
 
         findViewById<Button>(R.id.room_creation).setOnClickListener { view ->
@@ -43,13 +44,9 @@ class MenuActivity : AppCompatActivity() {
         playerName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (s != null && s.isNotEmpty()) {
-                    findViewById<Button>(R.id.join_room).isFocusable = true
-                    findViewById<Button>(R.id.room_creation).isFocusable = true
                     findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_700))
                     findViewById<Button>(R.id.room_creation).setTextColor(resources.getColor(R.color.green_700))
                 } else {
-                    findViewById<Button>(R.id.join_room).isFocusable = false
-                    findViewById<Button>(R.id.room_creation).isFocusable = false
                     findViewById<Button>(R.id.join_room).setTextColor(resources.getColor(R.color.green_200))
                     findViewById<Button>(R.id.room_creation).setTextColor(resources.getColor(R.color.green_200))
                 }
@@ -65,7 +62,9 @@ class MenuActivity : AppCompatActivity() {
 
 
     private fun createRoom() {
-        RoomCreator().execute()
+        if (playerName.text.isNotEmpty()) {
+            RoomCreator().execute()
+        }
     }
 
     private inner class RoomCreator: AsyncTask<Void, Integer, ConnectionResult>() {

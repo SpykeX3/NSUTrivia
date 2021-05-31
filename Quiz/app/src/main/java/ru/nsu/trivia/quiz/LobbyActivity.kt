@@ -1,5 +1,6 @@
 package ru.nsu.trivia.quiz
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
@@ -18,11 +19,12 @@ import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
 import ru.nsu.trivia.quiz.adapters.PlayerRecyclerViewAdapter
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
+import ru.nsu.trivia.quiz.gameFragments.InRoomActivity
 import ru.nsu.trivia.quiz.gameFragments.TaskController
+import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import java.util.concurrent.Executors
 
-class LobbyActivity : AppCompatActivity() {
-    private lateinit var lobbyDTO: LobbyDTO
+class LobbyActivity : InRoomActivity(){
     private val context = this
     private lateinit var adapter: PlayerRecyclerViewAdapter
     private val exec = Executors.newFixedThreadPool(2)
@@ -31,7 +33,7 @@ class LobbyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lobby)
         val objectMapper = ObjectMapper()
-        lobbyDTO =
+        lobby =
             intent.extras?.getString("lobbyDTO")?.let { objectMapper.readValue<LobbyDTO>(it) }!!
 
         fillRecyclerView()
@@ -40,7 +42,7 @@ class LobbyActivity : AppCompatActivity() {
             findViewById<Button>(R.id.button_start_game).visibility = View.INVISIBLE
         }
 
-        findViewById<TextView>(R.id.room_code_text_view).text = lobbyDTO.id
+        findViewById<TextView>(R.id.room_code_text_view).text = lobby.id
 
         findViewById<Button>(R.id.button_start_game).setOnClickListener { view ->
             StartGameTask().executeOnExecutor(exec)
@@ -49,13 +51,13 @@ class LobbyActivity : AppCompatActivity() {
     }
 
     private fun getRoomUsers(): List<PlayerInLobby> {
-        return lobbyDTO.players
+        return lobby.players
     }
 
     fun shareRoomCode(view: View) {
         val sendIntent = Intent()
         sendIntent.action = Intent.ACTION_SEND
-        sendIntent.putExtra(Intent.EXTRA_TEXT, lobbyDTO.id)
+        sendIntent.putExtra(Intent.EXTRA_TEXT, lobby.id)
         sendIntent.type = "text/plain"
 
         val shareIntent = Intent.createChooser(sendIntent, null)
@@ -83,34 +85,39 @@ class LobbyActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
 
         override fun onPostExecute(result: LobbyDTO?) {
-            if (lobbyDTO.state == LobbyState.Playing){
+            if (lobby.state == LobbyState.Playing){
                 val controller = TaskController(this@LobbyActivity)
-                controller.goToTaskActivity(lobbyDTO)
-            } else if (lobbyDTO.state == LobbyState.Waiting) {
+                controller.goToTaskActivity(lobby)
+            } else if (lobby.state == LobbyState.Waiting) {
                 RoomSubscriber().execute()
                 adapter.notifyDataSetChanged()
             }
-            else if (lobbyDTO.state == LobbyState.Closed){
-
+            else if (lobby.state == LobbyState.Closed || lobby.state == LobbyState.Finished){
+             //Todo: host left the game
             }
         }
 
         override fun doInBackground(vararg params: Void?): LobbyDTO? {
             val result =
-                APIConnector.doLongPoling("lobby/subscribe", TokenController.getToken(context), lobbyDTO.lastUpdated)
+                APIConnector.doLongPoling("lobby/subscribe", TokenController.getToken(context), lobby.lastUpdated)
             if (result.code == 200) {
                 val objectMapper = ObjectMapper()
-                lobbyDTO = objectMapper.readValue<LobbyDTO>(result.responce)
-                adapter.setResponseListToNew(lobbyDTO.players)
-                return lobbyDTO
+                lobby = objectMapper.readValue<LobbyDTO>(result.responce)
+                adapter.setResponseListToNew(lobby.players)
+                return lobby
             }
             else{
                 //TODO
             }
             return null
         }
+    }
+
+    override fun onBackPressed() {
+        AlertDialogCreator().createAlertDialog(this).show()
     }
 }

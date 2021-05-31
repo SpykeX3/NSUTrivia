@@ -3,10 +3,10 @@ package ru.nsu.trivia.quiz.tasks
 import android.os.AsyncTask
 import ru.nsu.trivia.common.dto.model.LobbyDTO
 import ru.nsu.trivia.common.dto.model.LobbyState
-import ru.nsu.trivia.quiz.gameFragments.TaskActivity
+import ru.nsu.trivia.quiz.gameFragments.InRoomActivity
 import ru.nsu.trivia.quiz.gameFragments.TaskController
 
-class GoToNextTask(val lobby: LobbyDTO, val context: TaskActivity) : AsyncTask<Int, Int, Int>() {
+class GoToNextTask(val lobby: LobbyDTO, val context: InRoomActivity) : AsyncTask<Int, Int, Int>() {
     override fun doInBackground(vararg params: Int?): Int {
         Thread.sleep(3000)
         return 0

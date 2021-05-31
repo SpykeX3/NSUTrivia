@@ -26,7 +26,7 @@ import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
-class SelectAnswerTaskActivity : TaskActivity() {
+class SelectAnswerInRoomActivity : InRoomActivity() {
 
     lateinit var task: SelectAnswerTaskDTO
     lateinit var adapter: SelectAnswerViewAdapter
@@ -111,7 +111,7 @@ class SelectAnswerTaskActivity : TaskActivity() {
                 answer.variantId = Integer.MIN_VALUE
             }
             answer.round = currRound
-            answer.token = TokenController.getToken(this@SelectAnswerTaskActivity)
+            answer.token = TokenController.getToken(this@SelectAnswerInRoomActivity)
             APIConnector.doPost("lobby/answer", answer)
             return 0
         }

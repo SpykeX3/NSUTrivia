@@ -23,7 +23,7 @@
         app:layout_constraintCircleRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:inputType="textPersonName|textCapCharacters"
+        android:inputType="textCapWords"
         android:maxLength="6"
         app:layout_constraintTop_toTopOf="parent"/>
 

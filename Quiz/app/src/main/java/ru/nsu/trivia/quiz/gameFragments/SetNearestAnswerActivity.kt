@@ -6,6 +6,8 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -25,7 +27,7 @@ import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 
-class SetNearestAnswerActivity : TaskActivity() {
+class SetNearestAnswerActivity : InRoomActivity() {
     lateinit var task: SetNearestValueTaskDTO
     private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
@@ -56,7 +58,7 @@ class SetNearestAnswerActivity : TaskActivity() {
                 if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    if (!isAnswered) {
+                    if (!timeOut) {
                         handler.postDelayed(this, 500)
                     }
                 } else {
@@ -65,14 +67,29 @@ class SetNearestAnswerActivity : TaskActivity() {
                     animation.visibility = View.VISIBLE
                     animation.focusable = View.FOCUSABLE
                     timeOut = true
-                    if (!isAnswered){
+                    if (!isAnswered) {
                         SendCorrectAns().executeOnExecutor(Executors.newFixedThreadPool(2))
                     }
                 }
             }
         })
-
         RoomSubscriber().execute()
+
+        findViewById<EditText>(R.id.edit_text).addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null && s.isNotEmpty()) {
+                    setButtonActive()
+                } else {
+                    setButtonInactive()
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
     }
 
 
@@ -96,8 +113,7 @@ class SetNearestAnswerActivity : TaskActivity() {
             if (!timeOut) {
                 answer.answer =
                     Integer.parseInt(findViewById<EditText>(R.id.edit_text).text.toString())
-            }
-            else{
+            } else {
                 answer.answer = Integer.MIN_VALUE
             }
             answer.round = currRound
@@ -118,8 +134,10 @@ class SetNearestAnswerActivity : TaskActivity() {
 
 
     fun setAnswer(view: View) {
-        val exec = Executors.newFixedThreadPool(2)
-        SendCorrectAns().executeOnExecutor(exec)
+        if (findViewById<EditText>(R.id.edit_text).text.isNotEmpty()) {
+            val exec = Executors.newFixedThreadPool(2)
+            SendCorrectAns().executeOnExecutor(exec)
+        }
     }
 
     override fun onBackPressed() {

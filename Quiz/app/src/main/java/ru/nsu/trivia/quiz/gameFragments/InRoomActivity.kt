@@ -9,7 +9,7 @@ import ru.nsu.trivia.common.dto.model.LobbyDTO
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.TokenController
 
-abstract class TaskActivity : AppCompatActivity() {
+abstract class InRoomActivity : AppCompatActivity() {
     var leftRoom = false
     lateinit var lobby: LobbyDTO
 
@@ -25,7 +25,7 @@ abstract class TaskActivity : AppCompatActivity() {
             val result =
                 APIConnector.doLongPoling(
                     "lobby/subscribe",
-                    TokenController.getToken(this@TaskActivity),
+                    TokenController.getToken(this@InRoomActivity),
                     lobby.lastUpdated
                 )
             if (result.code == 200) {

@@ -5,11 +5,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import androidx.core.content.ContextCompat.startActivity
 import ru.nsu.trivia.quiz.MenuActivity
-import ru.nsu.trivia.quiz.gameFragments.TaskActivity
+import ru.nsu.trivia.quiz.gameFragments.InRoomActivity
 import java.util.concurrent.Executors
 
 class AlertDialogCreator {
-    fun createAlertDialog(context: TaskActivity): AlertDialog {
+    fun createAlertDialog(context: InRoomActivity): AlertDialog {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog)
         builder.setTitle("Do you want to leave room?")

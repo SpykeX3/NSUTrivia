@@ -4,12 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.nsu.trivia.common.dto.model.task.SelectAnswerTaskDTO
 import ru.nsu.trivia.quiz.R
-import ru.nsu.trivia.quiz.gameFragments.SelectAnswerTaskActivity
+import ru.nsu.trivia.quiz.gameFragments.SelectAnswerInRoomActivity
 
 class SelectAnswerViewAdapter(var context: Context, var responseList: SelectAnswerTaskDTO) :
     RecyclerView.Adapter<SelectAnswerViewAdapter.ViewHolder>() {
@@ -43,7 +42,7 @@ class SelectAnswerViewAdapter(var context: Context, var responseList: SelectAnsw
         }
         else{
             holder.textView.setOnClickListener { view ->
-                (context as SelectAnswerTaskActivity).showCorrect(position)
+                (context as SelectAnswerInRoomActivity).showCorrect(position)
             }
         }
     }
