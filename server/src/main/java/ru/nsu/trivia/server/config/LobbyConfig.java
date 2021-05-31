@@ -3,6 +3,7 @@ package ru.nsu.trivia.server.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.nsu.trivia.server.task.DbSelectAnswerTaskProducer;
@@ -40,6 +41,7 @@ public class LobbyConfig {
         return new DbSetNearestAnswerTaskProducer(setNearestAnswerTaskRepository);
     }
 
+    @Profile("!test")
     @Bean
     TaskService taskService(DbSelectAnswerTaskProducer dbSelectAnswerTaskProducer,
                             DbSetNearestAnswerTaskProducer dbSetNearestAnswerTaskProducer) {

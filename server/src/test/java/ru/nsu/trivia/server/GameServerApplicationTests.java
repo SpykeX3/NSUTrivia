@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import ru.nsu.trivia.common.dto.model.LobbyDTO;
 import ru.nsu.trivia.common.dto.model.LobbyState;
 import ru.nsu.trivia.common.dto.model.PlayerInLobby;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GameServerApplicationTests {
@@ -208,11 +210,11 @@ class GameServerApplicationTests {
             lobbyFuture.complete(lobbyDTO);
         }).start();
         StatusResponse submit1 = restTemplate.postForObject(getUrl("lobby/answer"),
-                new SelectAnswerAnswer(tokenUser1, 0, 1), StatusResponse.class);
+                new SelectAnswerAnswer(tokenUser1, 1, 1), StatusResponse.class);
         assertEquals(0, submit1.code);
         assertNull(submit1.error);
         StatusResponse submit2 = restTemplate.postForObject(getUrl("lobby/answer"),
-                new SelectAnswerAnswer(tokenUser2, 1, 1), StatusResponse.class);
+                new SelectAnswerAnswer(tokenUser2, 0, 1), StatusResponse.class);
         assertEquals(0, submit2.code);
         assertNull(submit2.error);
 
