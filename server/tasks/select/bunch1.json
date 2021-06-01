@@ -1,1 +1,10 @@
-[{"id":1,"question":"Question example","variants":["Answer 1","Answer 2","Another answer"],"correct":1,"timeLimit":30}]
+[{"id":1,"question":"Fear of closely-packed holes is called?","variants":["Arachnophobia","Trypophobia","Globophobia"],"correct":1,"timeLimit":30},
+  {"id":2,"question":"What sort of animal is Walt Disney's Dumbo?","variants":["Deer","Rabbit","Elephant","Donkey"],"correct":2,"timeLimit":30},
+  {"id":3,"question":"Suffolk Punch and Hackney are types of what?","variants":["Carriage","Wrestling style","Cocktail","Horse"],"correct":3,"timeLimit":30},
+  {"id":4,"question":"Which Shakespeare play features the line \"Neither a borrower, nor a lender be\"?","variants":["Hamlet","Macbeth","Othello","The Merchant of Venice"],"correct":0,"timeLimit":30},
+  {"id":5,"question":"Which is the largest city in the USA's largest state?","variants":["Dallas","Los Angeles","New York","Anchorage"],"correct":3,"timeLimit":30},
+  {"id":6,"question":"The word \"aristocracy\" literally means power in the hands of whom?","variants":["The few","The best","The barons","The rich"],"correct":1,"timeLimit":30},
+  {"id":7,"question":"From which author's work did scientists take the word \"quark\"?\n","variants":["Lewis Carroll","Edward Lear","James Joyce","Aldous Huxley"],"correct":2,"timeLimit":30},
+  {"id":8,"question":"A person with well-developed abdominal muscles is said to have a what?","variants":["One-pack","Six-pack","12-pack","Family-pack"],"correct":1,"timeLimit":30},
+  {"id":9,"question":"Where did Scotch whisky originate?","variants":["Ireland","Wales","The United States","Scotland"],"correct":3,"timeLimit":30}
+]

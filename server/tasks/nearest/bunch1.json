@@ -1,1 +1,9 @@
-[{"id": 1, "question": "How much is ten?", "correct": 10, "timeLimit": 30}]
+[{"id": 1, "question": "What is the Celsius equivalent of 77 degrees Fahrenheit?", "correct": 25, "timeLimit": 30},
+  {"id": 2, "question": "How many stripes are on the American flag?", "correct": 13, "timeLimit": 30},
+  {"id": 3, "question": "How many books are in the Harry Potter series?", "correct": 7, "timeLimit": 30},
+  {"id": 4, "question": "What is the third digit in Pi?", "correct": 4, "timeLimit": 30},
+  {"id": 5, "question": "How many wisdom teeth does the average human have?", "correct": 4, "timeLimit": 30},
+  {"id": 6, "question": "According to an old English proverb, a cat has how many lives?", "correct": 9, "timeLimit": 30},
+  {"id": 7, "question": "How many items are in a baker's dozen?", "correct": 13, "timeLimit": 30},
+  {"id": 8, "question": "In Disney's The Little Mermaid, how many sisters does Ariel have?", "correct": 6, "timeLimit": 30},
+  {"id": 9, "question": "How many elements are on the Periodic Table?", "correct": 118, "timeLimit": 30}]
