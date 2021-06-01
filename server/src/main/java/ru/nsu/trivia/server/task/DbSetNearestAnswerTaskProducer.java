@@ -32,4 +32,9 @@ public class DbSetNearestAnswerTaskProducer implements TaskProducer {
         }
         return SetNearestAnswerTaskConverter.convert(task);
     }
+
+    @Override
+    public long count() {
+        return repository.count();
+    }
 }

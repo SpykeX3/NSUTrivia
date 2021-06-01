@@ -39,6 +39,11 @@ public class DbTaskService implements TaskService {
 
     @Override
     public TaskDTO generateTask(Lobby lobby) {
-        return producers.get(lobby.getGameConfiguration().getTaskTypes().get(lobby.getRound())).produce();
+        TaskProducer producer = producers.get(lobby.getGameConfiguration().getTaskTypes().get(lobby.getRound()));
+        TaskDTO task = producer.produce();
+        while (producer.count() > lobby.getGameConfiguration().getTaskTypes().size() && lobby.getPreviousTasks().contains(task)) {
+            task = producer.produce();
+        }
+        return task;
     }
 }

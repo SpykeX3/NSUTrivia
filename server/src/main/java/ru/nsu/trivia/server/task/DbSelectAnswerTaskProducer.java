@@ -32,4 +32,9 @@ public class DbSelectAnswerTaskProducer implements TaskProducer {
         }
         return SelectAnswerTaskConverter.convert(task);
     }
+
+    @Override
+    public long count() {
+        return repository.count();
+    }
 }
