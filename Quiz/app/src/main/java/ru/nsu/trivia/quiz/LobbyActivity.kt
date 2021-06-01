@@ -6,11 +6,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.nsu.trivia.common.dto.model.LobbyDTO
@@ -25,7 +27,7 @@ import ru.nsu.trivia.quiz.gameFragments.TaskController
 import ru.nsu.trivia.quiz.tasks.AlertDialogCreator
 import java.util.concurrent.Executors
 
-class LobbyActivity : InRoomActivity(){
+class LobbyActivity : InRoomActivity() {
     private val context = this
     private lateinit var adapter: PlayerRecyclerViewAdapter
     private val exec = Executors.newFixedThreadPool(2)
@@ -50,6 +52,7 @@ class LobbyActivity : InRoomActivity(){
             StartGameTask().executeOnExecutor(exec)
         }
         RoomSubscriber().execute()
+        findViewById<LinearLayout>(R.id.error).visibility = View.INVISIBLE
     }
 
     private fun getRoomUsers(): List<PlayerInLobby> {
@@ -91,29 +94,33 @@ class LobbyActivity : InRoomActivity(){
     private inner class RoomSubscriber : AsyncTask<Void, Int, LobbyDTO?>() {
 
         override fun onPostExecute(result: LobbyDTO?) {
-            if (lobby.state == LobbyState.Playing){
+            if (lobby.state == LobbyState.Playing) {
                 val controller = TaskController(this@LobbyActivity)
                 controller.goToTaskActivity(lobby)
             } else if (lobby.state == LobbyState.Waiting) {
                 RoomSubscriber().execute()
                 adapter.notifyDataSetChanged()
-            }
-            else if (lobby.state == LobbyState.Closed || lobby.state == LobbyState.Finished){
-             //Todo: host left the game
+            } else if (lobby.state == LobbyState.Closed || lobby.state == LobbyState.Finished) {
+                findViewById<LinearLayout>(R.id.error).visibility = View.VISIBLE
+                findViewById<LottieAnimationView>(R.id.animationError).setAnimation(R.raw.error)
+                findViewById<LottieAnimationView>(R.id.animationError).animate()
+                findViewById<TextView>(R.id.textError).text = "Host leave the game"
             }
         }
 
         override fun doInBackground(vararg params: Void?): LobbyDTO? {
-            val result =
-                APIConnector.doLongPoling("lobby/subscribe", TokenController.getToken(context), lobby.lastUpdated)
-            if (result.code == 200) {
+            try {
+                val result =
+                    APIConnector.doLongPoling(
+                        "lobby/subscribe",
+                        TokenController.getToken(context),
+                        lobby.lastUpdated
+                    )
                 val objectMapper = ObjectMapper()
                 lobby = objectMapper.readValue<LobbyDTO>(result.responce)
                 adapter.setResponseListToNew(lobby.players)
                 return lobby
-            }
-            else{
-                //TODO
+            } catch (e: Exception) {
             }
             return null
         }

@@ -9,17 +9,22 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.lottie.LottieAnimationView
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import ru.nsu.trivia.common.dto.model.ErrorCode
+import ru.nsu.trivia.common.dto.model.LobbyDTO
+import ru.nsu.trivia.common.dto.model.task.SetNearestValueTaskDTO
 import ru.nsu.trivia.common.dto.requests.ChangeUsernameRequest
 import ru.nsu.trivia.common.dto.requests.JoinLobbyRequest
+import ru.nsu.trivia.common.dto.requests.UsingTokenRequest
+import ru.nsu.trivia.common.dto.responses.StatusResponse
 import ru.nsu.trivia.quiz.clientTasks.APIConnector
 import ru.nsu.trivia.quiz.clientTasks.ConnectionResult
 import ru.nsu.trivia.quiz.clientTasks.TokenController
+import java.util.concurrent.ThreadPoolExecutor
 
 class JoinRoomActivity : AppCompatActivity() {
     val context = this
@@ -38,11 +43,8 @@ class JoinRoomActivity : AppCompatActivity() {
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
         playerName = intent.extras?.getString("userName").toString()
@@ -50,7 +52,8 @@ class JoinRoomActivity : AppCompatActivity() {
         findViewById<Button>(R.id.join_room).setOnClickListener { view ->
             joinRoom(findViewById<EditText>(R.id.edit_text_room_code).text.toString())
         }
-        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
+
+        hideAnimation()
     }
 
     private fun joinRoom(roomCode: String) {
@@ -68,19 +71,10 @@ class JoinRoomActivity : AppCompatActivity() {
         findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
     }
 
-    private fun showError() {
-        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
-        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.error)
-        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
-        showButtons(View.INVISIBLE)
-        findViewById<Button>(R.id.try_again).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.errorMessage).visibility = View.VISIBLE
-    }
-
     private fun showLoading() {
         findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
-        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.loading)
-        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        findViewById<LottieAnimationView>(R.id.errorAnimationView).visibility = View.INVISIBLE
+        findViewById<LottieAnimationView>(R.id.loadingAnimationView).playAnimation()
         showButtons(View.INVISIBLE)
         findViewById<Button>(R.id.try_again).visibility = View.INVISIBLE
         findViewById<TextView>(R.id.errorMessage).visibility = View.INVISIBLE
@@ -103,16 +97,42 @@ class JoinRoomActivity : AppCompatActivity() {
                     intent.putExtra("lobbyDTO", result.responce)
                     startActivity(intent)
                 } else {
+                    val objectMapper = ObjectMapper()
+                    var response = objectMapper.readValue<StatusResponse>(result.responce)
+
                     val toast = Toast.makeText(
                         this@JoinRoomActivity,
                         "Room doesn't exist",
                         Toast.LENGTH_SHORT
                     )
+
+                    when (response.code) {
+                        ErrorCode.WRONG_ROOM_CODE.ordinal -> toast.setText("Room doesn't exist")
+                        ErrorCode.GAME_ALREADY_STARTED.ordinal -> toast.setText("Game already started")
+                        ErrorCode.PLAYER_ALREADY_IN_LOBBY.ordinal -> {
+                            Thread {
+                                val request = UsingTokenRequest()
+                                request.token = TokenController.getToken(context)
+                                APIConnector.doPost("lobby/leave", request)
+
+                                RoomJoiner().execute()
+                            }.start()
+                            return
+                        }
+                    }
                     toast.setGravity(Gravity.TOP, 0, 20)
                     toast.show()
+                    hideAnimation()
                 }
             } else {
-                showError()
+                val toast = Toast.makeText(
+                    this@JoinRoomActivity,
+                    "Can't connect the server, try next time",
+                    Toast.LENGTH_SHORT
+                )
+                toast.setGravity(Gravity.TOP, 0, 20)
+                toast.show()
+                hideAnimation()
             }
         }
 

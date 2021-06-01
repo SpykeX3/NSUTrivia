@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +31,6 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
     lateinit var task: SelectAnswerTaskDTO
     lateinit var adapter: SelectAnswerViewAdapter
     private var mLayoutManager = LinearLayoutManager(this)
-    private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
     private var timeOut = false
 
@@ -52,8 +52,9 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
         mRecyclerView?.adapter = adapter
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
+        findViewById<LinearLayout>(R.id.error).visibility = View.INVISIBLE
+
         val animation = findViewById<LottieAnimationView>(R.id.animationWaitingView)
-        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
         animation.visibility = View.INVISIBLE
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -65,7 +66,7 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
                 if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    if (!isAnswered) {
+                    if (!timeOut) {
                         Log.d(
                             "Tag",
                             (Math.abs(System.currentTimeMillis() - time).toInt() / 1000).toString()
@@ -97,20 +98,30 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {
         override fun onPreExecute() {
             super.onPreExecute()
-            isAnswered = true
+            if (isConnected) {
+                isAnswered = true
+            }
         }
 
         override fun doInBackground(vararg params: Int?): Int {
-            val answer = SelectAnswerAnswer()
-             if (!timeOut) {
-                answer.variantId = params[0]!!
-            }else{
-                answer.variantId = Integer.MIN_VALUE
+            if (isConnected) {
+                val answer = SelectAnswerAnswer()
+                if (!timeOut) {
+                    answer.variantId = params[0]!!
+                } else {
+                    answer.variantId = Integer.MIN_VALUE
+                }
+                answer.round = currRound
+                answer.token = TokenController.getToken(this@SelectAnswerInRoomActivity)
+                APIConnector.doPost("lobby/answer", answer)
+                return 0
+            } else {
+                val handler = Handler(Looper.getMainLooper())
+                handler.postDelayed({
+                    SendCorrectAns().executeOnExecutor(Executors.newFixedThreadPool(1))
+                }, 2000)
+                return Int.MIN_VALUE
             }
-            answer.round = currRound
-            answer.token = TokenController.getToken(this@SelectAnswerInRoomActivity)
-            APIConnector.doPost("lobby/answer", answer)
-            return 0
         }
     }
 

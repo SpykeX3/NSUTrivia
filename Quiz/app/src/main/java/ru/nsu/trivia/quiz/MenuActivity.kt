@@ -117,8 +117,9 @@ class MenuActivity : AppCompatActivity() {
 
     private fun showError() {
         findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
-        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.error)
-        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        findViewById<LottieAnimationView>(R.id.errorAnimationView).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.loadingAnimationView).visibility = View.INVISIBLE
+        findViewById<LottieAnimationView>(R.id.errorAnimationView).playAnimation()
         showButtons(View.INVISIBLE)
         findViewById<Button>(R.id.try_again).visibility = View.VISIBLE
         findViewById<TextView>(R.id.errorMessage).visibility = View.VISIBLE
@@ -126,8 +127,9 @@ class MenuActivity : AppCompatActivity() {
 
     private fun showLoading() {
         findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.VISIBLE
-        findViewById<LottieAnimationView>(R.id.animationView).setAnimation(R.raw.loading)
-        findViewById<LottieAnimationView>(R.id.animationView).playAnimation()
+        findViewById<LottieAnimationView>(R.id.errorAnimationView).visibility = View.INVISIBLE
+        findViewById<LottieAnimationView>(R.id.loadingAnimationView).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.loadingAnimationView).playAnimation()
         showButtons(View.INVISIBLE)
         findViewById<Button>(R.id.try_again).visibility = View.INVISIBLE
         findViewById<TextView>(R.id.errorMessage).visibility = View.INVISIBLE

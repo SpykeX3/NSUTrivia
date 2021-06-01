@@ -8,10 +8,7 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,7 +25,6 @@ import kotlin.properties.Delegates
 
 class SetNearestAnswerActivity : InRoomActivity() {
     lateinit var task: SetNearestValueTaskDTO
-    private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
     private var timeOut = false
 
@@ -45,8 +41,9 @@ class SetNearestAnswerActivity : InRoomActivity() {
         }
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
+        findViewById<LinearLayout>(R.id.error).visibility = View.INVISIBLE
+
         val animation = findViewById<LottieAnimationView>(R.id.animationWaitingView)
-        findViewById<ConstraintLayout>(R.id.animationLayout).visibility = View.INVISIBLE
         animation.visibility = View.INVISIBLE
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -67,7 +64,7 @@ class SetNearestAnswerActivity : InRoomActivity() {
                     animation.visibility = View.VISIBLE
                     animation.focusable = View.FOCUSABLE
                     timeOut = true
-                    if (!isAnswered) {
+                    if (!timeOut) {
                         SendCorrectAns().executeOnExecutor(Executors.newFixedThreadPool(2))
                     }
                 }
@@ -91,7 +88,6 @@ class SetNearestAnswerActivity : InRoomActivity() {
             }
         })
     }
-
 
     fun showCorrect() {
         findViewById<TextView>(R.id.text_view_question).text =
@@ -134,7 +130,7 @@ class SetNearestAnswerActivity : InRoomActivity() {
 
 
     fun setAnswer(view: View) {
-        if (findViewById<EditText>(R.id.edit_text).text.isNotEmpty()) {
+        if (findViewById<EditText>(R.id.edit_text).text.isNotEmpty() && !isAnswered) {
             val exec = Executors.newFixedThreadPool(2)
             SendCorrectAns().executeOnExecutor(exec)
         }

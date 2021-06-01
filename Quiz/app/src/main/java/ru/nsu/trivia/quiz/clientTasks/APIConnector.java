@@ -56,21 +56,27 @@ public class APIConnector {
         con.setRequestProperty("Accept", "application/json");
         con.setRequestMethod("POST");
 
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(requestBody);
-        OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-        wr.write(json);
-        wr.flush();
-        wr.close();
-        return getConnResult(con);
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(requestBody);
+            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+            wr.write(json);
+            wr.flush();
+            wr.close();
+            return getConnResult(con);
     }
 
     private static ConnectionResult getConnResult(HttpURLConnection con) throws IOException {
         int status = con.getResponseCode();
         StringBuilder sb = new StringBuilder();
 
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(con.getInputStream(), "utf-8"));
+        BufferedReader br;
+        if (status == 200) {
+            br = new BufferedReader(
+                    new InputStreamReader(con.getInputStream(), "utf-8"));
+        }else {
+            br = new BufferedReader(
+                    new InputStreamReader(con.getErrorStream(), "utf-8"));
+        }
         String line = null;
         while ((line = br.readLine()) != null) {
             sb.append(line + "\n");

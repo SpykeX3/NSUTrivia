@@ -13,17 +13,17 @@
     <TextView
         android:id="@+id/text_view_question"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_row="1"
         android:layout_gravity="top"
         android:layout_margin="20dp"
         android:gravity="center"
         android:textColor="@color/gray_200"
-        android:textSize="25sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/error" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_variants"
@@ -32,7 +32,7 @@
         android:layout_row="2"
         android:layout_rowWeight="1"
         android:layout_gravity="center"
-        android:layout_marginTop="101dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toTopOf="@+id/progressBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,10 +64,30 @@
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/waiting_other_players" />
 
-    <include
-        layout="@layout/error_include"
-        android:id="@+id/animationLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <LinearLayout
+        android:id="@+id/error"
+        android:layout_width="276dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/progressBar"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/wifi" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Trying to reconnect..."
+            android:textSize="18dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
