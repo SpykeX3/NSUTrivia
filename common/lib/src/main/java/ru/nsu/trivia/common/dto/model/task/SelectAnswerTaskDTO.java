@@ -1,6 +1,7 @@
 package ru.nsu.trivia.common.dto.model.task;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SelectAnswerTaskDTO extends TaskDTO {
     private String question;
@@ -39,5 +40,22 @@ public class SelectAnswerTaskDTO extends TaskDTO {
 
     public void setCorrectVariantId(Integer correctVariantId) {
         this.correctVariantId = correctVariantId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SelectAnswerTaskDTO that = (SelectAnswerTaskDTO) o;
+        return question.equals(that.question);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(question);
     }
 }

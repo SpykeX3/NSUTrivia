@@ -1,5 +1,7 @@
 package ru.nsu.trivia.common.dto.model.task;
 
+import java.util.Objects;
+
 public class SetNearestValueTaskDTO extends TaskDTO {
     private String question;
     private Integer correctAnswer;
@@ -27,5 +29,22 @@ public class SetNearestValueTaskDTO extends TaskDTO {
 
     public void setCorrectAnswer(Integer correctAnswer) {
         this.correctAnswer = correctAnswer;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SetNearestValueTaskDTO that = (SetNearestValueTaskDTO) o;
+        return question.equals(that.question);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(question);
     }
 }
