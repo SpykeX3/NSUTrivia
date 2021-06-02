@@ -1,15 +1,15 @@
 package ru.nsu.trivia.quiz.gameFragments
 
-import android.app.Activity
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
@@ -31,7 +31,6 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
     lateinit var task: SelectAnswerTaskDTO
     lateinit var adapter: SelectAnswerViewAdapter
     private var mLayoutManager = LinearLayoutManager(this)
-    private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
     private var timeOut = false
 
@@ -45,7 +44,6 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
             currRound = lobby.round
         }
 
-        //init question
         (mLayoutManager).orientation = LinearLayoutManager.VERTICAL
         val mRecyclerView = findViewById<RecyclerView>(R.id.recycler_view_variants)
         mRecyclerView?.layoutManager = mLayoutManager
@@ -54,7 +52,9 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
         mRecyclerView?.adapter = adapter
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
-        val animation = findViewById<LottieAnimationView>(R.id.animationView)
+        findViewById<LinearLayout>(R.id.error).visibility = View.INVISIBLE
+
+        val animation = findViewById<LottieAnimationView>(R.id.animationWaitingView)
         animation.visibility = View.INVISIBLE
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -66,7 +66,7 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
                 if (Math.abs(System.currentTimeMillis() - time) < lobby.currentTask.timeLimit) {
                     progressBar.progress =
                         Math.abs(System.currentTimeMillis() - time).toInt() / 1000
-                    if (!isAnswered) {
+                    if (!timeOut) {
                         Log.d(
                             "Tag",
                             (Math.abs(System.currentTimeMillis() - time).toInt() / 1000).toString()
@@ -84,36 +84,44 @@ class SelectAnswerInRoomActivity : InRoomActivity() {
                 }
             }
         })
-
         RoomSubscriber().execute()
     }
-
 
     fun showCorrect(id: Int) {
         adapter.showCorrect(id, (lobby.currentTask as SelectAnswerTaskDTO).correctVariantId)
         adapter.notifyDataSetChanged()
         val exec = Executors.newFixedThreadPool(2)
         SendCorrectAns().executeOnExecutor(exec, id)
-        findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+        findViewById<LottieAnimationView>(R.id.animationWaitingView).visibility = View.VISIBLE
     }
 
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {
         override fun onPreExecute() {
             super.onPreExecute()
-            isAnswered = true
+            if (isConnected) {
+                isAnswered = true
+            }
         }
 
         override fun doInBackground(vararg params: Int?): Int {
-            val answer = SelectAnswerAnswer()
-             if (!timeOut) {
-                answer.variantId = params[0]!!
-            }else{
-                answer.variantId = Integer.MIN_VALUE
+            if (isConnected) {
+                val answer = SelectAnswerAnswer()
+                if (!timeOut) {
+                    answer.variantId = params[0]!!
+                } else {
+                    answer.variantId = Integer.MIN_VALUE
+                }
+                answer.round = currRound
+                answer.token = TokenController.getToken(this@SelectAnswerInRoomActivity)
+                APIConnector.doPost("lobby/answer", answer)
+                return 0
+            } else {
+                val handler = Handler(Looper.getMainLooper())
+                handler.postDelayed({
+                    SendCorrectAns().executeOnExecutor(Executors.newFixedThreadPool(1))
+                }, 2000)
+                return Int.MIN_VALUE
             }
-            answer.round = currRound
-            answer.token = TokenController.getToken(this@SelectAnswerInRoomActivity)
-            APIConnector.doPost("lobby/answer", answer)
-            return 0
         }
     }
 

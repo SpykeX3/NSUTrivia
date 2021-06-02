@@ -33,21 +33,16 @@ public class APIConnector {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
 
-        int status = con.getResponseCode();
         StringBuilder sb = new StringBuilder();
-        if (status == HttpURLConnection.HTTP_OK) {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(con.getInputStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();
-            Log.d(TAG, "Get: " + sb.toString());
-            return sb.toString();
-        } else {
-            return "";
+        BufferedReader br = new BufferedReader(
+                new InputStreamReader(con.getInputStream(), "utf-8"));
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
         }
+        br.close();
+        Log.d(TAG, "Get: " + sb.toString());
+        return sb.toString();
     }
 
     public static ConnectionResult doPost(String url, Object requestBody) throws IOException {
@@ -61,43 +56,34 @@ public class APIConnector {
         con.setRequestProperty("Accept", "application/json");
         con.setRequestMethod("POST");
 
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(requestBody);
-        OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
-        wr.write(json);
-        wr.flush();
-        wr.close();
-        return getConnResult(con);
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(requestBody);
+            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+            wr.write(json);
+            wr.flush();
+            wr.close();
+            return getConnResult(con);
     }
 
     private static ConnectionResult getConnResult(HttpURLConnection con) throws IOException {
         int status = con.getResponseCode();
         StringBuilder sb = new StringBuilder();
 
-        if (status == HttpURLConnection.HTTP_OK) {
-            BufferedReader br = new BufferedReader(
+        BufferedReader br;
+        if (status == 200) {
+            br = new BufferedReader(
                     new InputStreamReader(con.getInputStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();
-            Log.d(TAG, "Get: " + sb.toString());
-            ConnectionResult result = new ConnectionResult(status, null, sb.toString());
-            return result;
-        } else {
-            //TODO: fix on Vasily make it work on  server
-            /*BufferedReader br = new BufferedReader(
+        }else {
+            br = new BufferedReader(
                     new InputStreamReader(con.getErrorStream(), "utf-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            br.close();*/
-            Log.d(TAG, "Get: " + sb.toString());
-
-            ConnectionResult result = new ConnectionResult(status, con.getResponseMessage(), sb.toString());
-            return result;
         }
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
+        }
+        br.close();
+        Log.d(TAG, "Get: " + sb.toString());
+        ConnectionResult result = new ConnectionResult(status, null, sb.toString());
+        return result;
     }
 }

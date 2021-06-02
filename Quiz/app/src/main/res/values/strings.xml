@@ -32,4 +32,6 @@
     <string name="title_activity_set_nearest_answer">SetNearestAnswerActivity</string>
     <string name="send_answer">Send answer</string>
     <string name="enter_number">Enter number</string>
+    <string name="reconnect">Try again</string>
+    <string name="can_t_connect_to_server">Cannot connect to server</string>
 </resources>

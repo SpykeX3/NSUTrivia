@@ -7,10 +7,11 @@
     android:layout_height="match_parent">
 
 
+
     <TextView
         android:id="@+id/text_view_question"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:gravity="center"
         android:textColor="@color/gray_200"
@@ -79,7 +80,7 @@
         android:onClick="setAnswer"/>
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
+        android:id="@+id/animationWaitingView"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
         android:layout_margin="20dp"
@@ -91,5 +92,30 @@
         app:layout_constraintBottom_toTopOf="@id/progressBar"
         app:layout_constraintEnd_toStartOf="@id/send_answer"/>
 
+    <LinearLayout
+        android:id="@+id/error"
+        android:layout_width="276dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/progressBar"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/wifi" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Trying to reconnect..."
+            android:textSize="18dp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

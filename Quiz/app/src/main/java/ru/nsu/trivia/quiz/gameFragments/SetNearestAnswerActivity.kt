@@ -1,7 +1,6 @@
 package ru.nsu.trivia.quiz.gameFragments
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
@@ -9,11 +8,8 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -29,7 +25,6 @@ import kotlin.properties.Delegates
 
 class SetNearestAnswerActivity : InRoomActivity() {
     lateinit var task: SetNearestValueTaskDTO
-    private var currRound by Delegates.notNull<Int>()
     private var isAnswered = false
     private var timeOut = false
 
@@ -46,7 +41,9 @@ class SetNearestAnswerActivity : InRoomActivity() {
         }
 
         findViewById<TextView>(R.id.text_view_question).text = task.question
-        val animation = findViewById<LottieAnimationView>(R.id.animationView)
+        findViewById<LinearLayout>(R.id.error).visibility = View.INVISIBLE
+
+        val animation = findViewById<LottieAnimationView>(R.id.animationWaitingView)
         animation.visibility = View.INVISIBLE
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -67,7 +64,7 @@ class SetNearestAnswerActivity : InRoomActivity() {
                     animation.visibility = View.VISIBLE
                     animation.focusable = View.FOCUSABLE
                     timeOut = true
-                    if (!isAnswered) {
+                    if (!timeOut) {
                         SendCorrectAns().executeOnExecutor(Executors.newFixedThreadPool(2))
                     }
                 }
@@ -92,7 +89,6 @@ class SetNearestAnswerActivity : InRoomActivity() {
         })
     }
 
-
     fun showCorrect() {
         findViewById<TextView>(R.id.text_view_question).text =
             findViewById<TextView>(R.id.text_view_question).text.toString() +
@@ -103,7 +99,7 @@ class SetNearestAnswerActivity : InRoomActivity() {
     inner class SendCorrectAns : AsyncTask<Int, Int, Int>() {
         override fun onPreExecute() {
             super.onPreExecute()
-            findViewById<LottieAnimationView>(R.id.animationView).visibility = View.VISIBLE
+            findViewById<LottieAnimationView>(R.id.animationWaitingView).visibility = View.VISIBLE
             isAnswered = true
             showCorrect()
         }
@@ -134,7 +130,7 @@ class SetNearestAnswerActivity : InRoomActivity() {
 
 
     fun setAnswer(view: View) {
-        if (findViewById<EditText>(R.id.edit_text).text.isNotEmpty()) {
+        if (findViewById<EditText>(R.id.edit_text).text.isNotEmpty() && !isAnswered) {
             val exec = Executors.newFixedThreadPool(2)
             SendCorrectAns().executeOnExecutor(exec)
         }
