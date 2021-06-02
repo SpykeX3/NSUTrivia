@@ -53,8 +53,7 @@ public class LobbyService {
     private final PriorityBlockingQueue<Lobby> runningLobbies = new PriorityBlockingQueue<>();
 
     private final GameConfiguration gameConfiguration = new GameConfiguration(
-            List.of(TaskDTO.Type.Select_answer, TaskDTO.Type.Select_answer, TaskDTO.Type.Type_answer,
-                    TaskDTO.Type.Select_answer, TaskDTO.Type.Select_answer, TaskDTO.Type.Type_answer));
+            List.of(TaskDTO.Type.Select_answer, TaskDTO.Type.Select_answer, TaskDTO.Type.Type_answer));
 
     public LobbyService(SessionService sessionService, TaskService taskService, long closedLobbyLifetime,
                         long activeLobbyLifetime) {
